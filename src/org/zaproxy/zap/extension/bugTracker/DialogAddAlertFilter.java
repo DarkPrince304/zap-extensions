@@ -57,7 +57,6 @@ public class DialogAddAlertFilter extends AbstractFormDialog {
 	private JComboBox<String> newLevelCombo;
 	private ZapTextField urlTextField;
 	private JCheckBox regexCheckBox;
-	private ZapTextField paramTextField;
 	protected Context workingContext;
 	protected AlertFilter alertFilter;
 
@@ -124,7 +123,6 @@ public class DialogAddAlertFilter extends AbstractFormDialog {
 				getNewLevel(),
 				getUrlTextField().getText(),
 				getRegexCheckBox().isSelected(),
-				getParamTextField().getText(),
 				this.getEnabledCheckBox().isSelected());
 	}
 
@@ -175,12 +173,6 @@ public class DialogAddAlertFilter extends AbstractFormDialog {
 			regexLabel.setLabelFor(getRegexCheckBox());
 			fieldsPanel.add(regexLabel, LayoutHelper.getGBC(0, 3, 1, 0.5D, insets));
 			fieldsPanel.add(getRegexCheckBox(), LayoutHelper.getGBC(1, 3, 1, 0.5D, insets));
-
-			JLabel paramLabel = new JLabel(
-					Constant.messages.getString("bugTracker.dialog.add.field.label.param"));
-			paramLabel.setLabelFor(getParamTextField());
-			fieldsPanel.add(paramLabel, LayoutHelper.getGBC(0, 4, 1, 0.5D, insets));
-			fieldsPanel.add(getParamTextField(), LayoutHelper.getGBC(1, 4, 1, 0.5D, insets));
 			
 			JLabel enabledLabel = new JLabel(
 					Constant.messages.getString("bugTracker.dialog.add.field.label.enabled"));
@@ -215,13 +207,6 @@ public class DialogAddAlertFilter extends AbstractFormDialog {
 			regexCheckBox = new JCheckBox();
 		}
 		return regexCheckBox;
-	}
-	
-	protected ZapTextField getParamTextField() {
-		if (paramTextField == null) {
-			paramTextField = new ZapTextField();
-		}
-		return paramTextField;
 	}
 
 	protected JComboBox<String> getAlertCombo() {

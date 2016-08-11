@@ -44,7 +44,7 @@ public class AlertFilter extends Enableable {
 	}
 
 	public AlertFilter(int contextId, int ruleId, int newRisk, String url,
-			boolean regex, String parameter, boolean enabled) {
+			boolean regex, boolean enabled) {
 		super();
 		this.contextId = contextId;
 		this.ruleId = ruleId;

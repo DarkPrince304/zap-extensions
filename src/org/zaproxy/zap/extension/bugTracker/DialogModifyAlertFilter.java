@@ -58,7 +58,6 @@ public class DialogModifyAlertFilter extends DialogAddAlertFilter {
 				AlertFilter.getNameForRisk(alertFilter.getNewRisk()));
 		getUrlTextField().setText(alertFilter.getUrl());
 		getRegexCheckBox().setSelected(alertFilter.isRegex());
-		getParamTextField().setText(alertFilter.getParameter());
 
 		getEnabledCheckBox().setSelected(alertFilter.isEnabled());
 
