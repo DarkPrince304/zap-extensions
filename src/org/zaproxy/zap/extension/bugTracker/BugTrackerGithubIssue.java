@@ -27,6 +27,7 @@ import org.kohsuke.github.GHIssueBuilder;
 import org.kohsuke.github.GHIssue;
 import org.kohsuke.github.HttpException;
 import org.parosproxy.paros.Constant;
+import org.parosproxy.paros.control.Control;
 import org.parosproxy.paros.core.scanner.Alert;
 import java.io.IOException;
 import java.util.Set;
@@ -40,18 +41,43 @@ public class BugTrackerGithubIssue {
 	private String FIELD_ASSIGNEE = "bugTracker.trackers.github.issue.assignee";
 	private String FIELD_USERNAME = "bugTracker.trackers.github.issue.username";
 	private String FIELD_PASSWORD = "bugTracker.trackers.github.issue.password";
+    private String titleIssue = null;
+    private String bodyIssue = null;
+    private String labelsIssue = null;
 
-    private static final Logger log = Logger.getLogger(BugTrackerGithubIssue.class);
+    private static final Logger log = Logger.getLogger(BugTrackerGithubIssue.class);   
 
-    public BugTrackerGithubIssue (RaiseSemiAutoIssueDialog dialog, int index, Set<Alert> alerts) {
+    public BugTrackerGithubIssue (Set<Alert> alerts) {
+        setTitle(alerts);
+        setBody(alerts);
+        setLabels(alerts);
+    }
+
+    public void createDialogs(RaiseSemiAutoIssueDialog dialog, int index) {
         dialog.addTextField(index, FIELD_REPO, "");
+        dialog.addTextField(index, FIELD_TITLE, getTitle());
+        dialog.addMultilineField(index, FIELD_BODY, getBody());
+        dialog.addTextField(index, FIELD_LABELS, getLabels());
+        dialog.addTextField(index, FIELD_ASSIGNEE, "");
+        dialog.addTextField(index, FIELD_USERNAME, "");
+        dialog.addTextField(index, FIELD_PASSWORD, "");        
+    }
+
+    public void setTitle(Set<Alert> alerts) {
         StringBuilder title = new StringBuilder("");
-        StringBuilder body = new StringBuilder("");
-        StringBuilder labels = new StringBuilder("");
         for(Alert alert: alerts) {
             if(alert.getName().length() > 0 ) {
                 title.append(alert.getName().toString() + ", ");
             }
+        }
+        title.replace(title.length()-2, title.length()-1, "");
+        titleIssue = title.toString();
+    }
+    
+    public void setBody(Set<Alert> alerts) {
+        StringBuilder body = new StringBuilder("");
+        for(Alert alert: alerts) {
+
             if(alert.getName().length() > 0 ) {
                 body.append(" *ALERT IN QUESTION* \n" + alert.getName().toString() + "\n\n");
             }
@@ -80,6 +106,14 @@ public class BugTrackerGithubIssue {
                 body.append(" *EVIDENCE* \n" + alert.getEvidence().toString() + "\n\n\n\n");
             }
 
+        }
+        bodyIssue = body.toString();
+    }
+    
+    public void setLabels(Set<Alert> alerts) {
+        StringBuilder labels = new StringBuilder("");
+        for(Alert alert: alerts) {
+
             if(alert.getRisk() >= 0 ) {
                 labels.append("Risk: " + alert.MSG_RISK[alert.getRisk()] + ", ");
             }
@@ -92,15 +126,23 @@ public class BugTrackerGithubIssue {
             if(alert.getWascId() >= 0 ) {
                 labels.append("WASC: " + alert.getWascId() + ", ");
             }
+
         }
-        title.replace(title.length()-2, title.length()-1, "");
-        dialog.addTextField(index, FIELD_TITLE, title.toString());
-        dialog.addMultilineField(index, FIELD_BODY, body.toString());
-        dialog.addTextField(index, FIELD_LABELS, labels.toString());
-        dialog.addTextField(index, FIELD_ASSIGNEE, "");
-        dialog.addTextField(index, FIELD_USERNAME, "");
-        dialog.addTextField(index, FIELD_PASSWORD, "");
+        labelsIssue = labels.toString();
     }
+
+    public String getTitle() {
+        return this.titleIssue;
+    }
+    
+    public String getBody() {
+        return this.bodyIssue;
+    }
+    
+    public String getLabels() {
+        return this.labelsIssue;
+    }
+
 
     public void raiseOnTracker(String repo, String title, String body, String labels, String assignee, String username, String password) throws IOException {
         GitHub github = GitHub.connectUsingPassword(username, password);
@@ -125,14 +167,31 @@ public class BugTrackerGithubIssue {
         }
     }
 
+    public void raise() {
+        String repo, title, body, labels, assignee, username, password;
+        repo = "darkprince304/structjs";
+        title = getTitle();
+        body = getBody();
+        labels = getLabels();
+        assignee = "darkprince304";
+        username = "darkprince304";
+        password = "mishlet1304";
+        try {
+            raiseOnTracker(repo, title, body, labels, assignee, username, password);
+        } catch(IOException e) {
+            log.debug(e.toString());
+        }
+    }
+
     public void raise(RaiseSemiAutoIssueDialog dialog) {
-        String repo = dialog.getStringValue(FIELD_REPO);
-        String title = dialog.getStringValue(FIELD_TITLE);
-        String body = dialog.getStringValue(FIELD_BODY);
-        String labels =dialog.getStringValue(FIELD_LABELS);
-        String assignee = dialog.getStringValue(FIELD_ASSIGNEE);
-        String username = dialog.getStringValue(FIELD_USERNAME);
-        String password = dialog.getStringValue(FIELD_PASSWORD);
+        String repo, title, body, labels, assignee, username, password;
+        repo = dialog.getStringValue(FIELD_REPO);
+        title = dialog.getStringValue(FIELD_TITLE);
+        body = dialog.getStringValue(FIELD_BODY);
+        labels =dialog.getStringValue(FIELD_LABELS);
+        assignee = dialog.getStringValue(FIELD_ASSIGNEE);
+        username = dialog.getStringValue(FIELD_USERNAME);
+        password = dialog.getStringValue(FIELD_PASSWORD);
         try {
             raiseOnTracker(repo, title, body, labels, assignee, username, password);
         } catch(IOException e) {

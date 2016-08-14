@@ -70,7 +70,8 @@ public class RaiseSemiAutoIssueDialog extends StandardFieldsDialog {
         int bugTrackerCount = bugTrackers.length;
         for(int i = 0; i < bugTrackerCount; i++ ) {
         	if(bugTrackers[i].equals("github")){
-        		githubIssue = new BugTrackerGithubIssue(this, i, alerts);
+        		githubIssue = new BugTrackerGithubIssue(alerts);
+                githubIssue.createDialogs(this, i);
 
         	} else if(bugTrackers[i].equals("bugzilla")){
         		bugzillaIssue = new BugTrackerBugzillaIssue(this, i);

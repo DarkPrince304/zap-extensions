@@ -416,29 +416,43 @@ public class ExtensionBugTracker extends ExtensionAdaptor implements ContextPane
 							continue;
 						}
 					}
-					Alert updAlert = alert;
-					Alert origAlert = updAlert.newInstance();
-					if (filter.getNewRisk() == -1) {
-						updAlert.setRiskConfidence(alert.getRisk(), Alert.CONFIDENCE_FALSE_POSITIVE);
-					} else {
-						updAlert.setRiskConfidence(filter.getNewRisk(), alert.getConfidence());
-					}
-					try {
-						log.debug("Filter matched, setting Alert with plugin id : " + alert.getPluginId() + " to " + filter.getNewRisk());
-						getExtAlert().updateAlert(updAlert);
-						getExtAlert().updateAlertInTree(origAlert, updAlert);
-						if (alert.getHistoryRef() != null) {
-							alert.getHistoryRef().updateAlert(updAlert);
-							if (alert.getHistoryRef().getSiteNode() != null) {
-								// Needed if the same alert was raised on another href for the same SiteNode
-								alert.getHistoryRef().getSiteNode().updateAlert(updAlert);
-							}
+					if (filter.getNewRisk() > -2) {
+						if (filter.getNewRisk() != alert.getRisk()) {
+							log.debug("Filter didnt match Risk: " + filter.getNewRisk() +
+								    " != " + alert.getRisk());
+							continue;
 						}
-					} catch (Exception e) {
-						log.error(e.getMessage(), e);
 					}
+					System.out.println("ITS TIME");
+					System.out.println(alert.getName());
+					System.out.println(alert.getConfidence());
+					this.alerts.add(alert);
+
+					// Alert updAlert = alert;
+					// Alert origAlert = updAlert.newInstance();
+					// if (filter.getNewRisk() == -1) {
+					// 	updAlert.setRiskConfidence(alert.getRisk(), Alert.CONFIDENCE_FALSE_POSITIVE);
+					// } else {
+					// 	updAlert.setRiskConfidence(filter.getNewRisk(), alert.getConfidence());
+					// }
+					// try {
+					// 	log.debug("Filter matched, setting Alert with plugin id : " + alert.getPluginId() + " to " + filter.getNewRisk());
+					// 	getExtAlert().updateAlert(updAlert);
+					// 	getExtAlert().updateAlertInTree(origAlert, updAlert);
+					// 	if (alert.getHistoryRef() != null) {
+					// 		alert.getHistoryRef().updateAlert(updAlert);
+					// 		if (alert.getHistoryRef().getSiteNode() != null) {
+					// 			// Needed if the same alert was raised on another href for the same SiteNode
+					// 			alert.getHistoryRef().getSiteNode().updateAlert(updAlert);
+					// 		}
+					// 	}
+					// } catch (Exception e) {
+					// 	log.error(e.getMessage(), e);
+					// }
 					break;
 				}
+				BugTrackerGithubIssue githubIssue = new BugTrackerGithubIssue(this.alerts);
+				githubIssue.raise();
 			}
 		}
 
