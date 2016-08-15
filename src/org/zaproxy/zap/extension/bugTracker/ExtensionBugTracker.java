@@ -39,6 +39,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -423,36 +424,12 @@ public class ExtensionBugTracker extends ExtensionAdaptor implements ContextPane
 							continue;
 						}
 					}
-					System.out.println("ITS TIME");
-					System.out.println(alert.getName());
-					System.out.println(alert.getConfidence());
+					this.alerts = new HashSet<>();
 					this.alerts.add(alert);
-
-					// Alert updAlert = alert;
-					// Alert origAlert = updAlert.newInstance();
-					// if (filter.getNewRisk() == -1) {
-					// 	updAlert.setRiskConfidence(alert.getRisk(), Alert.CONFIDENCE_FALSE_POSITIVE);
-					// } else {
-					// 	updAlert.setRiskConfidence(filter.getNewRisk(), alert.getConfidence());
-					// }
-					// try {
-					// 	log.debug("Filter matched, setting Alert with plugin id : " + alert.getPluginId() + " to " + filter.getNewRisk());
-					// 	getExtAlert().updateAlert(updAlert);
-					// 	getExtAlert().updateAlertInTree(origAlert, updAlert);
-					// 	if (alert.getHistoryRef() != null) {
-					// 		alert.getHistoryRef().updateAlert(updAlert);
-					// 		if (alert.getHistoryRef().getSiteNode() != null) {
-					// 			// Needed if the same alert was raised on another href for the same SiteNode
-					// 			alert.getHistoryRef().getSiteNode().updateAlert(updAlert);
-					// 		}
-					// 	}
-					// } catch (Exception e) {
-					// 	log.error(e.getMessage(), e);
-					// }
+					BugTrackerGithubIssue githubIssue = new BugTrackerGithubIssue(this.alerts);
+					githubIssue.raise();
 					break;
 				}
-				BugTrackerGithubIssue githubIssue = new BugTrackerGithubIssue(this.alerts);
-				githubIssue.raise();
 			}
 		}
 

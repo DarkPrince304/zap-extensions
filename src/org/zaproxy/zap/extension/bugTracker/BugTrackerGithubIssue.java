@@ -156,6 +156,7 @@ public class BugTrackerGithubIssue {
                 issue.label(labelArray[i]);
             }
             String response = issue.create().toString();
+            System.out.println(response);
             if(response.contains("401")) {
                 log.debug(Constant.messages.getString("bugTracker.popup.issue.msg.auth"));
             }
@@ -176,8 +177,10 @@ public class BugTrackerGithubIssue {
         assignee = "darkprince304";
         username = "darkprince304";
         password = "mishlet1304";
+        System.out.println(repo+ " "+ title + " "+ body + " " + labels + " " + assignee + " " + username + " " + password + " ");
         try {
             raiseOnTracker(repo, title, body, labels, assignee, username, password);
+            System.out.println("Raised");
         } catch(IOException e) {
             log.debug(e.toString());
         }
@@ -192,8 +195,10 @@ public class BugTrackerGithubIssue {
         assignee = dialog.getStringValue(FIELD_ASSIGNEE);
         username = dialog.getStringValue(FIELD_USERNAME);
         password = dialog.getStringValue(FIELD_PASSWORD);
+        System.out.println(repo+ " "+ title + " "+ body + " " + labels + " " + assignee + " " + username + " " + password + " ");
         try {
             raiseOnTracker(repo, title, body, labels, assignee, username, password);
+            System.out.println("Raised");
         } catch(IOException e) {
             log.debug(e.toString());
         }
