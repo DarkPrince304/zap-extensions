@@ -74,7 +74,8 @@ public class RaiseSemiAutoIssueDialog extends StandardFieldsDialog {
                 githubIssue.createDialogs(this, i);
 
         	} else if(bugTrackers[i].equals("bugzilla")){
-        		bugzillaIssue = new BugTrackerBugzillaIssue(this, i);
+        		bugzillaIssue = new BugTrackerBugzillaIssue(alerts);
+                bugzillaIssue.createDialogs(this, i);
         	}
         	// System.out.println(githubIssue);
         }
@@ -93,6 +94,7 @@ public class RaiseSemiAutoIssueDialog extends StandardFieldsDialog {
 
         	} else if(bugTrackers[i].equals("bugzilla")){
         		// bugzillaIssue = new BugTrackerBugzillaIssue(this, i);
+                bugzillaIssue.raise(this);
         	}
         	// System.out.println(githubIssue);
         }

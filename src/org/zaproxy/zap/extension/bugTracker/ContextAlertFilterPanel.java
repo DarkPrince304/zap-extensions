@@ -22,11 +22,29 @@ package org.zaproxy.zap.extension.bugTracker;
 import java.awt.CardLayout;
 import java.awt.Component;
 import java.awt.GridBagLayout;
+import java.awt.GridBagConstraints;
+import java.awt.Insets;
+
 
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
+import javax.swing.JComboBox;
+import javax.swing.JButton;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import java.awt.BorderLayout;
 import javax.swing.SortOrder;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import java.awt.Dimension;
+import java.awt.GridLayout;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import javax.swing.border.EmptyBorder;
+import java.awt.event.ItemListener;
+import java.awt.event.ItemEvent;
 
 import org.parosproxy.paros.Constant;
 import org.parosproxy.paros.model.Session;
@@ -36,12 +54,16 @@ import org.zaproxy.zap.view.AbstractContextPropertiesPanel;
 import org.zaproxy.zap.view.AbstractMultipleOptionsTablePanel;
 import org.zaproxy.zap.view.LayoutHelper;
 
-public class ContextAlertFilterPanel extends AbstractContextPropertiesPanel {
+public class ContextAlertFilterPanel extends AbstractContextPropertiesPanel implements ItemListener {
 
 	private AlertFiltersMultipleOptionsPanel alertFilterOptionsPanel;
+	private AlertFiltersMultipleOptionsPanel alertFilterOptionsPanel1;
 	private ContextAlertFilterManager contextManager;
 	private ExtensionBugTracker extension;
 	private AlertFilterTableModel alertFilterTableModel;
+    JLabel jl = new JLabel("Choose a Bug Tracker to Configure");
+    String[] item = {"C","C++","Java","Php"};
+    JComboBox jb = null;
 
 	/** The Constant serialVersionUID. */
 	private static final long serialVersionUID = -3920598166129639573L;
@@ -59,18 +81,76 @@ public class ContextAlertFilterPanel extends AbstractContextPropertiesPanel {
 		return contextId + ": " + PANEL_NAME;
 	}
 
-	private void initialize() {
-		this.setLayout(new CardLayout());
-		this.setName(getPanelName(getContextIndex()));
-		this.setLayout(new GridBagLayout());
+    private void initialize() {
+        this.setLayout(new GridBagLayout());
+        this.setName(getPanelName(getContextIndex()));
+        GridBagConstraints c = new GridBagConstraints();
+        c.gridx = 0;
+        c.gridwidth = 2;
+        c.weightx = 1.0D;
+        c.weighty = 0.5D;
+        c.fill = GridBagConstraints.BOTH;
 
-		this.add(new JLabel(Constant.messages.getString("bugTracker.panel.description")),
-				LayoutHelper.getGBC(0, 0, 1, 1.0d, 0.0d));
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.add(new JLabel("Rules"), BorderLayout.PAGE_START);
+        alertFilterTableModel = new AlertFilterTableModel();
+        alertFilterOptionsPanel = new AlertFiltersMultipleOptionsPanel(
+                this.extension,
+                alertFilterTableModel,
+                getContextIndex());
+        panel.add(alertFilterOptionsPanel, BorderLayout.CENTER);
+        add(panel, c);
 
-		alertFilterTableModel = new AlertFilterTableModel();
-		alertFilterOptionsPanel = new AlertFiltersMultipleOptionsPanel(this.extension, alertFilterTableModel, getContextIndex());
-		this.add(alertFilterOptionsPanel, LayoutHelper.getGBC(0, 1, 1, 1.0d, 1.0d));
-	}
+		jb = new JComboBox(item);
+		c.weighty = 0.1D;
+		c.gridx = 0;
+		c.gridy = 1;
+        add(jb, c);
+        jb.addItemListener(this);
+        // c.gridx = 1;
+        // c.gridy = 1;
+        // add(jl, c);
+
+        // JPanel userCredentials = new JPanel(new BorderLayout());
+        // userCredentials.add(new JLabel("User Credentials"), BorderLayout.PAGE_START);
+        // alertFilterTableModel = new AlertFilterTableModel();
+        // alertFilterOptionsPanel = new AlertFiltersMultipleOptionsPanel(
+        //         this.extension,
+        //         alertFilterTableModel,
+        //         getContextIndex());
+        // userCredentials.add(alertFilterOptionsPanel, BorderLayout.CENTER);
+        BugTrackerGithubConfiguration githubConfig = new BugTrackerGithubConfiguration();
+        JPanel userCredentials = githubConfig.getCredentialsTable();
+        // userCredentials.add(alertFilterOptionsPanel1, BorderLayout.EAST);
+        c.gridwidth = 1;
+        c.gridx = 0;
+        c.gridy = 2;
+        c.weighty = 0.4D;
+        add(userCredentials, c);
+
+        // JPanel panelBugTrackers = new JPanel(new BorderLayout());
+        // panelBugTrackers.add(new JLabel("Bug Trackers"), BorderLayout.PAGE_START);
+        // alertFilterTableModel = new AlertFilterTableModel();
+        // alertFilterOptionsPanel1 = new AlertFiltersMultipleOptionsPanel(
+        //         this.extension,
+        //         alertFilterTableModel,
+        //         getContextIndex());
+        // panelBugTrackers.add(alertFilterOptionsPanel1, BorderLayout.CENTER);
+
+
+        JPanel panelBugTrackers = githubConfig.getConfigTable();
+
+        c.gridx = 1;
+        c.gridy = 2;
+        add(panelBugTrackers, c);
+    }
+
+    public void itemStateChanged(ItemEvent ie)
+    {
+        String getItem = (String)jb.getSelectedItem();
+        
+        System.out.println(getItem);
+    }
 
 	@Override
 	public String getHelpIndex() {
