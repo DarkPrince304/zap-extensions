@@ -256,4 +256,8 @@ public class BugTrackerBugzilla extends BugTracker {
     public String getName() {
         return NAME;
     }
+    
+    public String getId() {
+        return NAME.toLowerCase();
+    }
 }

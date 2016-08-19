@@ -28,4 +28,6 @@ public abstract class BugTracker {
 
     public abstract JPanel getConfigTable();
 
+    public abstract String getId();
+
 }

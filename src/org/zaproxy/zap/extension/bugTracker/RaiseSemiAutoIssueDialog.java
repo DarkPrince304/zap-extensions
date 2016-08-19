@@ -47,8 +47,6 @@ public class RaiseSemiAutoIssueDialog extends StandardFieldsDialog {
                 new String[] {
                                 "bugTracker.trackers.github.tab",
                                 "bugTracker.trackers.bugzilla.tab",
-                                // "bugTracker.trackers.jira.tab",
-                                // "bugTracker.trackers.atlassan.tab"
                             });
         this.extension = ext;
         this.alerts = ext.alerts;

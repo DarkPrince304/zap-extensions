@@ -276,4 +276,26 @@ public class BugTrackerGithub extends BugTracker {
         return NAME;
     }
 
+    public String getId() {
+        return NAME.toLowerCase();
+    }
+
+    public static class GithubUser {
+
+        private String username = "";
+        private String password = "";
+        private String repoUrl = "";
+
+        public GithubUser(String username, String password, String repoUrl) {
+            this.username = username;
+            this.password = password;
+            this.repoUrl = repoUrl;
+        }
+
+        public GithubUser getUserConfig() {
+            return this;
+        }
+
+    }
+
 }
