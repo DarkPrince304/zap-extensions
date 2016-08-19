@@ -71,9 +71,6 @@ public class BugTrackerGithubTableModel extends AbstractMultipleOptionsTableMode
     
     @Override
 	public Class<?> getColumnClass(int c) {
-        if (c == 0) {
-            return Boolean.class;
-        }
         return String.class;
     }
 
@@ -91,9 +88,11 @@ public class BugTrackerGithubTableModel extends AbstractMultipleOptionsTableMode
     public Object getValueAt(int rowIndex, int columnIndex) {
         switch(columnIndex) {
         case 0:
-            // return Boolean.valueOf(getElement(rowIndex).isEnabled());
-        case 1:
             return getElement(rowIndex).getName();
+        case 1:
+            return getElement(rowIndex).getPassword();
+        case 2:
+            return getElement(rowIndex).getRepoUrl();
         }
         return null;
     }

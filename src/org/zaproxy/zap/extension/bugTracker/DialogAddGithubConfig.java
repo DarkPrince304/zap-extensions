@@ -208,7 +208,7 @@ class DialogAddGithubConfig extends AbstractFormDialog {
             });
         }
         
-        return nameTextField;
+        return passwordTextField;
     }
         
     protected ZapTextField getRepoUrlTextField() {
@@ -237,7 +237,7 @@ class DialogAddGithubConfig extends AbstractFormDialog {
             });
         }
         
-        return nameTextField;
+        return repoUrlTextField;
     }
     
     protected JCheckBox getEnabledCheckBox() {
