@@ -34,34 +34,34 @@ import org.parosproxy.paros.Constant;
 import org.zaproxy.zap.utils.ZapTextField;
 import org.zaproxy.zap.view.AbstractFormDialog;
 
-class DialogAddGithubConfig extends AbstractFormDialog {
+class DialogAddBugzillaConfig extends AbstractFormDialog {
 
     private static final long serialVersionUID = 4460797449668634319L;
 
-    private static final String DIALOG_TITLE = Constant.messages.getString("bugTracker.trackers.github.dialog.config.add.title");
+    private static final String DIALOG_TITLE = Constant.messages.getString("bugTracker.trackers.bugzilla.dialog.config.add.title");
     
-    private static final String CONFIRM_BUTTON_LABEL = Constant.messages.getString("bugTracker.trackers.github.dialog.config.add.button.confirm");
+    private static final String CONFIRM_BUTTON_LABEL = Constant.messages.getString("bugTracker.trackers.bugzilla.dialog.config.add.button.confirm");
     
-    private static final String NAME_FIELD_LABEL = Constant.messages.getString("bugTracker.trackers.github.dialog.config.field.label.name");
-    private static final String PASSWORD_FIELD_LABEL = Constant.messages.getString("bugTracker.trackers.github.dialog.config.field.label.password");
-    private static final String REPO_URL_FIELD_LABEL = Constant.messages.getString("bugTracker.trackers.github.dialog.config.field.label.repoUrl");
+    private static final String NAME_FIELD_LABEL = Constant.messages.getString("bugTracker.trackers.bugzilla.dialog.config.field.label.name");
+    private static final String PASSWORD_FIELD_LABEL = Constant.messages.getString("bugTracker.trackers.bugzilla.dialog.config.field.label.password");
+    private static final String REPO_URL_FIELD_LABEL = Constant.messages.getString("bugTracker.trackers.bugzilla.dialog.config.field.label.repoUrl");
     
-    private static final String TITLE_NAME_REPEATED_DIALOG = Constant.messages.getString("bugTracker.trackers.github.dialog.config.warning.name.repeated.title");
-    private static final String TEXT_NAME_REPEATED_DIALOG = Constant.messages.getString("bugTracker.trackers.github.dialog.config.warning.name.repeated.text");
+    private static final String TITLE_NAME_REPEATED_DIALOG = Constant.messages.getString("bugTracker.trackers.bugzilla.dialog.config.warning.name.repeated.title");
+    private static final String TEXT_NAME_REPEATED_DIALOG = Constant.messages.getString("bugTracker.trackers.bugzilla.dialog.config.warning.name.repeated.text");
     
     private ZapTextField nameTextField;
     private ZapTextField passwordTextField;
     private ZapTextField repoUrlTextField;
     private JCheckBox enabledCheckBox;
     
-    protected BugTrackerGithubParams config;
-    private List<BugTrackerGithubParams> configs;
+    protected BugTrackerBugzillaParams config;
+    private List<BugTrackerBugzillaParams> configs;
     
-    public DialogAddGithubConfig(Dialog owner) {
+    public DialogAddBugzillaConfig(Dialog owner) {
         super(owner, DIALOG_TITLE);
     }
     
-    protected DialogAddGithubConfig(Dialog owner, String title) {
+    protected DialogAddBugzillaConfig(Dialog owner, String title) {
         super(owner, title);
     }
     
@@ -121,7 +121,7 @@ class DialogAddGithubConfig extends AbstractFormDialog {
     @Override
     protected boolean validateFields() {
         String configName = getNameTextField().getText();
-        for (BugTrackerGithubParams t : configs) {
+        for (BugTrackerBugzillaParams t : configs) {
             if (configName.equalsIgnoreCase(t.getName())) {
                 JOptionPane.showMessageDialog(this, TEXT_NAME_REPEATED_DIALOG,
                         TITLE_NAME_REPEATED_DIALOG,
@@ -136,7 +136,7 @@ class DialogAddGithubConfig extends AbstractFormDialog {
     
     @Override
     protected void performAction() {
-        config = new BugTrackerGithubParams(getNameTextField().getText(), getPasswordTextField().getText(), getRepoUrlTextField().getText());
+        config = new BugTrackerBugzillaParams(getNameTextField().getText(), getPasswordTextField().getText(), getRepoUrlTextField().getText());
     }
     
     @Override
@@ -149,7 +149,7 @@ class DialogAddGithubConfig extends AbstractFormDialog {
         getRepoUrlTextField().discardAllEdits();
     }
 
-    public BugTrackerGithubParams getConfig() {
+    public BugTrackerBugzillaParams getConfig() {
         return config;
     }
     
@@ -248,7 +248,7 @@ class DialogAddGithubConfig extends AbstractFormDialog {
         return enabledCheckBox;
     }
 
-    public void setConfigs(List<BugTrackerGithubParams> configs) {
+    public void setConfigs(List<BugTrackerBugzillaParams> configs) {
         this.configs = configs;
     }
 

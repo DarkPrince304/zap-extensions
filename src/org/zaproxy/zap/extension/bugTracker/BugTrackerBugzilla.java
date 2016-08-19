@@ -119,7 +119,7 @@ public class BugTrackerBugzilla extends BugTracker {
     //     return credentialTable;
     // }
 
-    public JPanel getConfigTable() {
+    public JPanel getConfigPanel() {
         return configTable;
     }
 

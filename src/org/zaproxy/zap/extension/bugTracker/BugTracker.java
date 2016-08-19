@@ -26,7 +26,7 @@ public abstract class BugTracker {
 
     public abstract String getName();
 
-    public abstract JPanel getConfigTable();
+    public abstract JPanel getConfigPanel();
 
     public abstract String getId();
 

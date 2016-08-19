@@ -43,6 +43,43 @@ import java.awt.event.ActionEvent;
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 
+import java.awt.CardLayout;
+import java.awt.Component;
+import java.awt.GridBagLayout;
+import java.awt.GridBagConstraints;
+import java.awt.Insets;
+
+
+import javax.swing.JCheckBox;
+import javax.swing.JLabel;
+import javax.swing.JComboBox;
+import javax.swing.JButton;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import java.awt.BorderLayout;
+import javax.swing.SortOrder;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import java.awt.Dimension;
+import java.awt.GridLayout;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import javax.swing.border.EmptyBorder;
+import java.awt.event.ItemListener;
+import java.awt.event.ItemEvent;
+
+import java.util.ArrayList;
+import java.util.List;
+import org.parosproxy.paros.Constant;
+import org.parosproxy.paros.model.Session;
+import org.parosproxy.paros.view.View;
+import org.zaproxy.zap.model.Context;
+import org.zaproxy.zap.view.AbstractContextPropertiesPanel;
+import org.zaproxy.zap.view.AbstractMultipleOptionsTablePanel;
+import org.zaproxy.zap.view.LayoutHelper;
+
 public class BugTrackerGithub extends BugTracker {
 
     private String NAME = "Github";
@@ -57,6 +94,8 @@ public class BugTrackerGithub extends BugTracker {
     private String bodyIssue = null;
     private String labelsIssue = null;
     private JPanel configTable = null;
+    private JPanel githubPanel = null;
+    private BugTrackerGithubTableModel githubModel = null;
 
     private static final Logger log = Logger.getLogger(BugTrackerGithub.class);   
 
@@ -71,54 +110,15 @@ public class BugTrackerGithub extends BugTracker {
     }
 
     public void initializeConfigTable() {
-        String[] columnNames = {"Username/Email","Password","Repository Path"};
-        Object[][] data = {
-        {"Kathy", "Smith", "https://github.com/zaproxy/zap-extensions"},
-        {"John", "Doe", "https://github.com/zaproxy/zap-extensions"},
-        {"Sue", "Black", "https://github.com/zaproxy/zap-extensions"},
-        {"Jane", "White", "https://github.com/zaproxy/zap-extensions"},
-        {"Joe", "Brown", "https://github.com/zaproxy/zap-extensions"}
-        };
-
-
-        configTable = new JPanel(new BorderLayout());
-        final DefaultTableModel model = new DefaultTableModel(data, columnNames);
-        final JTable table = new JTable(model);
-
-        JPanel buttonLayout = new JPanel();
-        buttonLayout.setLayout(new FlowLayout(FlowLayout.CENTER));
-        JButton add = new JButton("Add");
-        JButton modify = new JButton("Modify");
-        JButton remove = new JButton("Remove");
-        add.addActionListener(new ActionListener() {
-
-            @Override
-            public void actionPerformed(ActionEvent arg0) {
-                // check for selected row first
-                if (table.getSelectedRow() != -1) {
-                    // remove selected row from the model
-                    model.removeRow(table.getSelectedRow());
-                    model.addRow(new Object[]{"Joe", "Brown"});
-                }
-            }
-        });
- 
-        buttonLayout.add(add);
-        buttonLayout.add(modify);
-        buttonLayout.add(remove);
-        //Create the scroll pane and add the table to it.
-        JScrollPane scrollPane = new JScrollPane(table);
-        configTable.add(new JLabel("Github Configuration"), BorderLayout.PAGE_START);
-        configTable.add(scrollPane, BorderLayout.CENTER);
-        configTable.add(buttonLayout, BorderLayout.SOUTH);
+        githubPanel = new BugTrackerGithubMultipleOptionsPanel(getGithubModel());
     }
 
     // public JPanel getCredentialsTable() {
     //     return credentialTable;
     // }
 
-    public JPanel getConfigTable() {
-        return configTable;
+    public JPanel getConfigPanel() {
+        return githubPanel;
     }
 
     public void createDialogs(RaiseSemiAutoIssueDialog dialog, int index) {
@@ -280,22 +280,95 @@ public class BugTrackerGithub extends BugTracker {
         return NAME.toLowerCase();
     }
 
-    public static class GithubUser {
-
-        private String username = "";
-        private String password = "";
-        private String repoUrl = "";
-
-        public GithubUser(String username, String password, String repoUrl) {
-            this.username = username;
-            this.password = password;
-            this.repoUrl = repoUrl;
+    /**
+     * This method initializes authModel    
+     *  
+     * @return org.parosproxy.paros.view.OptionsAuthenticationTableModel    
+     */    
+    private BugTrackerGithubTableModel getGithubModel() {
+        if (githubModel == null) {
+            githubModel = new BugTrackerGithubTableModel();
         }
-
-        public GithubUser getUserConfig() {
-            return this;
-        }
-
+        return githubModel;
     }
 
+
+    private static class BugTrackerGithubMultipleOptionsPanel extends AbstractMultipleOptionsTablePanel<BugTrackerGithubParams> {
+        
+        private static final long serialVersionUID = -115340627058929308L;
+        
+        private static final String REMOVE_DIALOG_TITLE = Constant.messages.getString("bugTracker.trackers.github.dialog.config.remove.title");
+        private static final String REMOVE_DIALOG_TEXT = Constant.messages.getString("bugTracker.trackers.github.dialog.config.remove.text");
+        
+        private static final String REMOVE_DIALOG_CONFIRM_BUTTON_LABEL = Constant.messages.getString("bugTracker.trackers.github.dialog.config.remove.button.confirm");
+        private static final String REMOVE_DIALOG_CANCEL_BUTTON_LABEL = Constant.messages.getString("bugTracker.trackers.github.dialog.config.remove.button.cancel");
+        
+        private static final String REMOVE_DIALOG_CHECKBOX_LABEL = Constant.messages.getString("bugTracker.trackers.github.dialog.config.remove.checkbox.label");
+        
+        private DialogAddGithubConfig addDialog = null;
+        private DialogModifyGithubConfig modifyDialog = null;
+        
+        private BugTrackerGithubTableModel model;
+        
+        public BugTrackerGithubMultipleOptionsPanel(BugTrackerGithubTableModel model) {
+            super(model);
+            
+            this.model = model;
+            
+            getTable().getColumnExt(0).setPreferredWidth(20);
+            getTable().setSortOrder(1, SortOrder.ASCENDING);
+        }
+
+        @Override
+        public BugTrackerGithubParams showAddDialogue() {
+            if (addDialog == null) {
+                addDialog = new DialogAddGithubConfig(View.getSingleton().getOptionsDialog(null));
+                addDialog.pack();
+            }
+            addDialog.setConfigs(model.getElements());
+            addDialog.setVisible(true);
+            
+            BugTrackerGithubParams config = addDialog.getConfig();
+            addDialog.clear();
+            
+            return config;
+        }
+        
+        @Override
+        public BugTrackerGithubParams showModifyDialogue(BugTrackerGithubParams e) {
+            if (modifyDialog == null) {
+                modifyDialog = new DialogModifyGithubConfig(View.getSingleton().getOptionsDialog(null));
+                modifyDialog.pack();
+            }
+            modifyDialog.setConfigs(model.getElements());
+            modifyDialog.setConfig(e);
+            modifyDialog.setVisible(true);
+            
+            BugTrackerGithubParams config = modifyDialog.getConfig();
+            modifyDialog.clear();
+            
+            if (!config.equals(e)) {
+                return config;
+            }
+            
+            return null;
+        }
+        
+        @Override
+        public boolean showRemoveDialogue(BugTrackerGithubParams e) {
+            JCheckBox removeWithoutConfirmationCheckBox = new JCheckBox(REMOVE_DIALOG_CHECKBOX_LABEL);
+            Object[] messages = {REMOVE_DIALOG_TEXT, " ", removeWithoutConfirmationCheckBox};
+            int option = JOptionPane.showOptionDialog(View.getSingleton().getMainFrame(), messages, REMOVE_DIALOG_TITLE,
+                    JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE,
+                    null, new String[] { REMOVE_DIALOG_CONFIRM_BUTTON_LABEL, REMOVE_DIALOG_CANCEL_BUTTON_LABEL }, null);
+
+            if (option == JOptionPane.OK_OPTION) {
+                setRemoveWithoutConfirmation(removeWithoutConfirmationCheckBox.isSelected());
+                
+                return true;
+            }
+            
+            return false;
+        }
+    }
 }

@@ -68,7 +68,8 @@ public class ContextAlertFilterPanel extends AbstractContextPropertiesPanel impl
     private JComboBox jb = null;
     private GridBagConstraints c = null;
     private JPanel panelBugTrackers = null;
-	private BugTrackerGithubTableModel antiCsrfModel = null;
+	private BugTrackerGithubTableModel githubModel = null;
+	private BugTrackerBugzillaTableModel bugzillaModel = null;
 
 	/** The Constant serialVersionUID. */
 	private static final long serialVersionUID = -3920598166129639573L;
@@ -124,7 +125,7 @@ public class ContextAlertFilterPanel extends AbstractContextPropertiesPanel impl
         c.gridy = 2;
         c.weighty = 0.58D;
 
-        panelBugTrackers = new AntiCsrfMultipleOptionsPanel(getAntiCsrfModel());
+        panelBugTrackers = githubConfig.getConfigPanel();
 
         add(panelBugTrackers, c);
     }
@@ -137,7 +138,7 @@ public class ContextAlertFilterPanel extends AbstractContextPropertiesPanel impl
         for(BugTracker bugTracker: bugTrackers) {
         	if(getItem.equals(bugTracker.getName())) {
         		remove(panelBugTrackers);
-        		panelBugTrackers = bugTracker.getConfigTable();
+        		panelBugTrackers = bugTracker.getConfigPanel();
         		add(panelBugTrackers, c);
         		validate();
         		break;
@@ -243,98 +244,7 @@ public class ContextAlertFilterPanel extends AbstractContextPropertiesPanel impl
 		}
 
 	}
-
-	/**
-	 * This method initializes authModel	
-	 * 	
-	 * @return org.parosproxy.paros.view.OptionsAuthenticationTableModel	
-	 */    
-	private BugTrackerGithubTableModel getAntiCsrfModel() {
-		if (antiCsrfModel == null) {
-			antiCsrfModel = new BugTrackerGithubTableModel();
-		}
-		return antiCsrfModel;
-	}
-
-
-	private static class AntiCsrfMultipleOptionsPanel extends AbstractMultipleOptionsTablePanel<BugTrackerGithubParams> {
-        
-        private static final long serialVersionUID = -115340627058929308L;
-        
-        private static final String REMOVE_DIALOG_TITLE = Constant.messages.getString("bugTracker.trackers.github.dialog.config.remove.title");
-	    private static final String REMOVE_DIALOG_TEXT = Constant.messages.getString("bugTracker.trackers.github.dialog.config.remove.text");
-	    
-	    private static final String REMOVE_DIALOG_CONFIRM_BUTTON_LABEL = Constant.messages.getString("bugTracker.trackers.github.dialog.config.remove.button.confirm");
-	    private static final String REMOVE_DIALOG_CANCEL_BUTTON_LABEL = Constant.messages.getString("bugTracker.trackers.github.dialog.config.remove.button.cancel");
-	    
-	    private static final String REMOVE_DIALOG_CHECKBOX_LABEL = Constant.messages.getString("bugTracker.trackers.github.dialog.config.remove.checkbox.label");
-	    
-	    private DialogAddGithubConfig addDialog = null;
-        private DialogModifyGithubConfig modifyDialog = null;
-        
-        private BugTrackerGithubTableModel model;
-        
-        public AntiCsrfMultipleOptionsPanel(BugTrackerGithubTableModel model) {
-            super(model);
-            
-            this.model = model;
-            
-            getTable().getColumnExt(0).setPreferredWidth(20);
-            getTable().setSortOrder(1, SortOrder.ASCENDING);
-        }
-
-        @Override
-        public BugTrackerGithubParams showAddDialogue() {
-            if (addDialog == null) {
-                addDialog = new DialogAddGithubConfig(View.getSingleton().getOptionsDialog(null));
-                addDialog.pack();
-            }
-            addDialog.setConfigs(model.getElements());
-            addDialog.setVisible(true);
-            
-            BugTrackerGithubParams config = addDialog.getConfig();
-            addDialog.clear();
-            
-            return config;
-        }
-        
-        @Override
-        public BugTrackerGithubParams showModifyDialogue(BugTrackerGithubParams e) {
-            if (modifyDialog == null) {
-                modifyDialog = new DialogModifyGithubConfig(View.getSingleton().getOptionsDialog(null));
-                modifyDialog.pack();
-            }
-            modifyDialog.setConfigs(model.getElements());
-            modifyDialog.setConfig(e);
-            modifyDialog.setVisible(true);
-            
-            BugTrackerGithubParams config = modifyDialog.getConfig();
-            modifyDialog.clear();
-            
-            if (!config.equals(e)) {
-                return config;
-            }
-            
-            return null;
-        }
-        
-        @Override
-        public boolean showRemoveDialogue(BugTrackerGithubParams e) {
-            JCheckBox removeWithoutConfirmationCheckBox = new JCheckBox(REMOVE_DIALOG_CHECKBOX_LABEL);
-            Object[] messages = {REMOVE_DIALOG_TEXT, " ", removeWithoutConfirmationCheckBox};
-            int option = JOptionPane.showOptionDialog(View.getSingleton().getMainFrame(), messages, REMOVE_DIALOG_TITLE,
-                    JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE,
-                    null, new String[] { REMOVE_DIALOG_CONFIRM_BUTTON_LABEL, REMOVE_DIALOG_CANCEL_BUTTON_LABEL }, null);
-
-            if (option == JOptionPane.OK_OPTION) {
-                setRemoveWithoutConfirmation(removeWithoutConfirmationCheckBox.isSelected());
-                
-                return true;
-            }
-            
-            return false;
-        }
-	}
+	
 
 	@Override
 	public void initContextData(Session session, Context uiCommonContext) {
