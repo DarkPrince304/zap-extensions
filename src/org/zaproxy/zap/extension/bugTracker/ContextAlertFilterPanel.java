@@ -46,6 +46,8 @@ import javax.swing.border.EmptyBorder;
 import java.awt.event.ItemListener;
 import java.awt.event.ItemEvent;
 
+import java.util.ArrayList;
+import java.util.List;
 import org.parosproxy.paros.Constant;
 import org.parosproxy.paros.model.Session;
 import org.parosproxy.paros.view.View;
@@ -61,9 +63,11 @@ public class ContextAlertFilterPanel extends AbstractContextPropertiesPanel impl
 	private ContextAlertFilterManager contextManager;
 	private ExtensionBugTracker extension;
 	private AlertFilterTableModel alertFilterTableModel;
-    JLabel jl = new JLabel("Choose a Bug Tracker to Configure");
-    String[] item = {"C","C++","Java","Php"};
-    JComboBox jb = null;
+    private JLabel jl = new JLabel("Choose a Bug Tracker to Configure");
+    private List<String> item = new ArrayList<String>();
+    private JComboBox jb = null;
+    private GridBagConstraints c = null;
+    private JPanel panelBugTrackers = null;
 
 	/** The Constant serialVersionUID. */
 	private static final long serialVersionUID = -3920598166129639573L;
@@ -84,11 +88,11 @@ public class ContextAlertFilterPanel extends AbstractContextPropertiesPanel impl
     private void initialize() {
         this.setLayout(new GridBagLayout());
         this.setName(getPanelName(getContextIndex()));
-        GridBagConstraints c = new GridBagConstraints();
+        c = new GridBagConstraints();
         c.gridx = 0;
         c.gridwidth = 2;
         c.weightx = 1.0D;
-        c.weighty = 0.5D;
+        c.weighty = 0.4D;
         c.fill = GridBagConstraints.BOTH;
 
         JPanel panel = new JPanel(new BorderLayout());
@@ -101,47 +105,26 @@ public class ContextAlertFilterPanel extends AbstractContextPropertiesPanel impl
         panel.add(alertFilterOptionsPanel, BorderLayout.CENTER);
         add(panel, c);
 
-		jb = new JComboBox(item);
-		c.weighty = 0.1D;
+        List<BugTracker> bugTrackers = extension.getBugTrackers();
+        for(BugTracker bugTracker: bugTrackers) {
+        	item.add(bugTracker.getName());
+        }
+		jb = new JComboBox(item.toArray());
+		c.weighty = 0.02D;
 		c.gridx = 0;
 		c.gridy = 1;
         add(jb, c);
         jb.addItemListener(this);
-        // c.gridx = 1;
-        // c.gridy = 1;
-        // add(jl, c);
+        
+        BugTrackerGithub githubConfig = new BugTrackerGithub();
 
-        // JPanel userCredentials = new JPanel(new BorderLayout());
-        // userCredentials.add(new JLabel("User Credentials"), BorderLayout.PAGE_START);
-        // alertFilterTableModel = new AlertFilterTableModel();
-        // alertFilterOptionsPanel = new AlertFiltersMultipleOptionsPanel(
-        //         this.extension,
-        //         alertFilterTableModel,
-        //         getContextIndex());
-        // userCredentials.add(alertFilterOptionsPanel, BorderLayout.CENTER);
-        BugTrackerGithubConfiguration githubConfig = new BugTrackerGithubConfiguration();
-        JPanel userCredentials = githubConfig.getCredentialsTable();
-        // userCredentials.add(alertFilterOptionsPanel1, BorderLayout.EAST);
-        c.gridwidth = 1;
+        c.gridwidth = 2;
         c.gridx = 0;
         c.gridy = 2;
-        c.weighty = 0.4D;
-        add(userCredentials, c);
+        c.weighty = 0.58D;
 
-        // JPanel panelBugTrackers = new JPanel(new BorderLayout());
-        // panelBugTrackers.add(new JLabel("Bug Trackers"), BorderLayout.PAGE_START);
-        // alertFilterTableModel = new AlertFilterTableModel();
-        // alertFilterOptionsPanel1 = new AlertFiltersMultipleOptionsPanel(
-        //         this.extension,
-        //         alertFilterTableModel,
-        //         getContextIndex());
-        // panelBugTrackers.add(alertFilterOptionsPanel1, BorderLayout.CENTER);
+        panelBugTrackers = githubConfig.getConfigTable();
 
-
-        JPanel panelBugTrackers = githubConfig.getConfigTable();
-
-        c.gridx = 1;
-        c.gridy = 2;
         add(panelBugTrackers, c);
     }
 
@@ -149,7 +132,14 @@ public class ContextAlertFilterPanel extends AbstractContextPropertiesPanel impl
     {
         String getItem = (String)jb.getSelectedItem();
         
-        System.out.println(getItem);
+        List<BugTracker> bugTrackers = extension.getBugTrackers();
+        for(BugTracker bugTracker: bugTrackers) {
+        	if(getItem.equals(bugTracker.getName())) {
+        		remove(panelBugTrackers);
+        		panelBugTrackers = bugTracker.getConfigTable();
+        		add(panelBugTrackers, c);
+        	}
+        }
     }
 
 	@Override

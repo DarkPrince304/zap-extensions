@@ -32,8 +32,20 @@ import org.parosproxy.paros.core.scanner.Alert;
 import java.io.IOException;
 import java.util.Set;
 
-public class BugTrackerGithubIssue {
+import javax.swing.JPanel;
+import javax.swing.JLabel;
+import javax.swing.JTable;
+import javax.swing.JButton;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.JScrollPane;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
+import java.awt.BorderLayout;
+import java.awt.FlowLayout;
 
+public class BugTrackerGithub extends BugTracker {
+
+    private String NAME = "Github";
     private String FIELD_REPO = "bugTracker.trackers.github.issue.repo";
 	private String FIELD_TITLE = "bugTracker.trackers.github.issue.title";
 	private String FIELD_BODY = "bugTracker.trackers.github.issue.body";
@@ -44,13 +56,69 @@ public class BugTrackerGithubIssue {
     private String titleIssue = null;
     private String bodyIssue = null;
     private String labelsIssue = null;
+    private JPanel configTable = null;
 
-    private static final Logger log = Logger.getLogger(BugTrackerGithubIssue.class);   
+    private static final Logger log = Logger.getLogger(BugTrackerGithub.class);   
 
-    public BugTrackerGithubIssue (Set<Alert> alerts) {
+    public BugTrackerGithub (Set<Alert> alerts) {
         setTitle(alerts);
         setBody(alerts);
         setLabels(alerts);
+    }
+
+    public BugTrackerGithub() {
+        initializeConfigTable();
+    }
+
+    public void initializeConfigTable() {
+        String[] columnNames = {"Username/Email","Password","Repository Path"};
+        Object[][] data = {
+        {"Kathy", "Smith", "https://github.com/zaproxy/zap-extensions"},
+        {"John", "Doe", "https://github.com/zaproxy/zap-extensions"},
+        {"Sue", "Black", "https://github.com/zaproxy/zap-extensions"},
+        {"Jane", "White", "https://github.com/zaproxy/zap-extensions"},
+        {"Joe", "Brown", "https://github.com/zaproxy/zap-extensions"}
+        };
+
+
+        configTable = new JPanel(new BorderLayout());
+        final DefaultTableModel model = new DefaultTableModel(data, columnNames);
+        final JTable table = new JTable(model);
+
+        JPanel buttonLayout = new JPanel();
+        buttonLayout.setLayout(new FlowLayout(FlowLayout.CENTER));
+        JButton add = new JButton("Add");
+        JButton modify = new JButton("Modify");
+        JButton remove = new JButton("Remove");
+        add.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent arg0) {
+                // check for selected row first
+                if (table.getSelectedRow() != -1) {
+                    // remove selected row from the model
+                    model.removeRow(table.getSelectedRow());
+                    model.addRow(new Object[]{"Joe", "Brown"});
+                }
+            }
+        });
+ 
+        buttonLayout.add(add);
+        buttonLayout.add(modify);
+        buttonLayout.add(remove);
+        //Create the scroll pane and add the table to it.
+        JScrollPane scrollPane = new JScrollPane(table);
+        configTable.add(new JLabel("Github Configuration"), BorderLayout.PAGE_START);
+        configTable.add(scrollPane, BorderLayout.CENTER);
+        configTable.add(buttonLayout, BorderLayout.SOUTH);
+    }
+
+    // public JPanel getCredentialsTable() {
+    //     return credentialTable;
+    // }
+
+    public JPanel getConfigTable() {
+        return configTable;
     }
 
     public void createDialogs(RaiseSemiAutoIssueDialog dialog, int index) {
@@ -202,6 +270,10 @@ public class BugTrackerGithubIssue {
         } catch(IOException e) {
             log.debug(e.toString());
         }
+    }
+
+    public String getName() {
+        return NAME;
     }
 
 }

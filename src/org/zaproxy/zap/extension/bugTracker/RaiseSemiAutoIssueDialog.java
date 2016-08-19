@@ -38,8 +38,8 @@ public class RaiseSemiAutoIssueDialog extends StandardFieldsDialog {
     
 	protected static final String PREFIX = "bugTracker";
     private String[] bugTrackers = {"github","bugzilla"/*,"jira","atlassan"*/};
-    private BugTrackerGithubIssue githubIssue;
-    private BugTrackerBugzillaIssue bugzillaIssue;
+    private BugTrackerGithub githubIssue;
+    private BugTrackerBugzilla bugzillaIssue;
     private Set<Alert> alerts = null;
 
     public RaiseSemiAutoIssueDialog(ExtensionBugTracker ext, Frame owner, Dimension dim){
@@ -70,11 +70,11 @@ public class RaiseSemiAutoIssueDialog extends StandardFieldsDialog {
         int bugTrackerCount = bugTrackers.length;
         for(int i = 0; i < bugTrackerCount; i++ ) {
         	if(bugTrackers[i].equals("github")){
-        		githubIssue = new BugTrackerGithubIssue(alerts);
+        		githubIssue = new BugTrackerGithub(alerts);
                 githubIssue.createDialogs(this, i);
 
         	} else if(bugTrackers[i].equals("bugzilla")){
-        		bugzillaIssue = new BugTrackerBugzillaIssue(alerts);
+        		bugzillaIssue = new BugTrackerBugzilla(alerts);
                 bugzillaIssue.createDialogs(this, i);
         	}
         	// System.out.println(githubIssue);

@@ -33,8 +33,20 @@ import org.parosproxy.paros.core.scanner.Alert;
 import java.io.IOException;
 import java.util.Set;
 
-public class BugTrackerBugzillaIssue {
+import javax.swing.JPanel;
+import javax.swing.JLabel;
+import javax.swing.JTable;
+import javax.swing.JButton;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.JScrollPane;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
+import java.awt.BorderLayout;
+import java.awt.FlowLayout;
 
+public class BugTrackerBugzilla extends BugTracker {
+
+    private String NAME = "Bugzilla";
     private String FIELD_URL = "bugTracker.trackers.bugzilla.issue.url";
     private String FIELD_PRODUCT = "bugTracker.trackers.bugzilla.issue.product";
     private String FIELD_COMPONENT = "bugTracker.trackers.bugzilla.issue.component";
@@ -47,12 +59,68 @@ public class BugTrackerBugzillaIssue {
     private String FIELD_PASSWORD = "bugTracker.trackers.bugzilla.issue.password";
     private String summaryIssue = null;
     private String descriptionIssue = null;
+    private JPanel configTable = null;
 
-    private static final Logger log = Logger.getLogger(BugTrackerBugzillaIssue.class);
+    private static final Logger log = Logger.getLogger(BugTrackerBugzilla.class);
 
-	public BugTrackerBugzillaIssue(Set<Alert> alerts) {
+	public BugTrackerBugzilla(Set<Alert> alerts) {
         setSummary(alerts);
         setDesc(alerts);
+    }
+
+    public BugTrackerBugzilla() {
+        initializeConfigTable();
+    }
+
+    public void initializeConfigTable() {
+        String[] columnNames = {"Username/Email","Password","Bugzilla URL"};
+        Object[][] data = {
+        {"Kathy", "Smith", "https://landfill.bugzilla.org/bugzilla-5.0-branch/"},
+        {"John", "Doe", "https://landfill.bugzilla.org/bugzilla-5.0-branch/"},
+        {"Sue", "Black", "https://landfill.bugzilla.org/bugzilla-5.0-branch/"},
+        {"Jane", "White", "https://landfill.bugzilla.org/bugzilla-5.0-branch/"},
+        {"Joe", "Brown", "https://landfill.bugzilla.org/bugzilla-5.0-branch/"}
+        };
+
+
+        configTable = new JPanel(new BorderLayout());
+        final DefaultTableModel model = new DefaultTableModel(data, columnNames);
+        final JTable table = new JTable(model);
+
+        JPanel buttonLayout = new JPanel();
+        buttonLayout.setLayout(new FlowLayout(FlowLayout.CENTER));
+        JButton add = new JButton("Add");
+        JButton modify = new JButton("Modify");
+        JButton remove = new JButton("Remove");
+        add.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent arg0) {
+                // check for selected row first
+                if (table.getSelectedRow() != -1) {
+                    // remove selected row from the model
+                    model.removeRow(table.getSelectedRow());
+                    model.addRow(new Object[]{"Joe", "Brown"});
+                }
+            }
+        });
+ 
+        buttonLayout.add(add);
+        buttonLayout.add(modify);
+        buttonLayout.add(remove);
+        //Create the scroll pane and add the table to it.
+        JScrollPane scrollPane = new JScrollPane(table);
+        configTable.add(new JLabel("Bugzilla Configuration"), BorderLayout.PAGE_START);
+        configTable.add(scrollPane, BorderLayout.CENTER);
+        configTable.add(buttonLayout, BorderLayout.SOUTH);
+    }
+
+    // public JPanel getCredentialsTable() {
+    //     return credentialTable;
+    // }
+
+    public JPanel getConfigTable() {
+        return configTable;
     }
 
     public void createDialogs(RaiseSemiAutoIssueDialog dialog, int index) {
@@ -185,4 +253,7 @@ public class BugTrackerBugzillaIssue {
         }
     } 
 
+    public String getName() {
+        return NAME;
+    }
 }

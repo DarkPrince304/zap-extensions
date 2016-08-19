@@ -95,6 +95,7 @@ public class ExtensionBugTracker extends ExtensionAdaptor implements ContextPane
 
 	private static final String RESOURCE = "/org/zaproxy/zap/extension/bugTracker/resources";
 
+	private List<BugTracker> bugTrackers = new ArrayList<BugTracker>();
 	private ZapMenuItem menuManual;
 	private ZapMenuItem menuSemi;
 	private PopupSemiAutoIssue popupMsgRaiseSemiAuto;
@@ -124,6 +125,14 @@ public class ExtensionBugTracker extends ExtensionAdaptor implements ContextPane
     public ExtensionBugTracker() {
         super(NAME);
  		initialize();
+    }
+
+    public void addBugTracker(BugTracker bugTracker) {
+    	bugTrackers.add(bugTracker);
+    }
+
+    public List<BugTracker> getBugTrackers() {
+    	return bugTrackers;
     }
 
 	private static ExtensionActiveScan getExtAscan() {
@@ -191,6 +200,11 @@ public class ExtensionBugTracker extends ExtensionAdaptor implements ContextPane
 
 		if (getView() != null) {
 			// Factory for generating Session Context alertFilters panels
+			addBugTracker(new BugTrackerGithub());
+			addBugTracker(new BugTrackerBugzilla());
+			for(BugTracker bug: bugTrackers) {
+				System.out.println(bug.getName());
+			}
 			getView().addContextPanelFactory(this);
 	    	extensionHook.getHookMenu().addPopupMenuItem(getPopupMsgRaiseSemiAuto());
 		}
@@ -426,7 +440,7 @@ public class ExtensionBugTracker extends ExtensionAdaptor implements ContextPane
 					}
 					this.alerts = new HashSet<>();
 					this.alerts.add(alert);
-					BugTrackerGithubIssue githubIssue = new BugTrackerGithubIssue(this.alerts);
+					BugTrackerGithub githubIssue = new BugTrackerGithub(this.alerts);
 					githubIssue.raise();
 					break;
 				}
