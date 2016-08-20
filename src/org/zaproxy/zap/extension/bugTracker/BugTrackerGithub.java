@@ -69,6 +69,7 @@ import java.awt.event.MouseEvent;
 import javax.swing.border.EmptyBorder;
 import java.awt.event.ItemListener;
 import java.awt.event.ItemEvent;
+import org.parosproxy.paros.model.OptionsParam;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -292,8 +293,16 @@ public class BugTrackerGithub extends BugTracker {
         return githubModel;
     }
 
-    private void save(OptionsParam optionsParam) {
-        
+    public void init(OptionsParam optionsParam) {
+        BugTrackerGithubParam githubParam = optionsParam.getParamSet(BugTrackerGithubParam.class);
+        getGithubModel().setConfigs(githubParam.getConfigs());
+        // githubPanel.setConfirmRemoveToken(!githubPanel.isConfirmRemoveToken());
+    }
+
+    public void save(OptionsParam optionsParam) {
+        BugTrackerGithubParam githubParam = optionsParam.getParamSet(BugTrackerGithubParam.class);
+        githubParam.setConfigs(getGithubModel().getElements());
+        // githubParam.setConfirmRemoveToken(!githubPanel.isRemoveWithoutConfirmation());
     }
 
     private static class BugTrackerGithubMultipleOptionsPanel extends AbstractMultipleOptionsTablePanel<BugTrackerGithubConfigParams> {

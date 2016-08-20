@@ -21,6 +21,7 @@
 package org.zaproxy.zap.extension.bugTracker;
 
 import javax.swing.JPanel;
+import org.parosproxy.paros.model.OptionsParam;
 
 public abstract class BugTracker {
 
@@ -29,5 +30,9 @@ public abstract class BugTracker {
     public abstract JPanel getConfigPanel();
 
     public abstract String getId();
+
+    public abstract void init(OptionsParam optionsParam);
+
+    public abstract void save(OptionsParam optionsParam);
 
 }

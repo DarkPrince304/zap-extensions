@@ -116,8 +116,14 @@ public class OptionsBugTrackerPanel extends AbstractParamPanel implements ItemLi
 
 	@Override
     public void initParam(Object obj) {
-	    // OptionsParam optionsParam = (OptionsParam) obj;
-	    // AntiCsrfParam param = optionsParam.getAntiCsrfParam();
+	    OptionsParam optionsParam = (OptionsParam) obj;
+	    String currentItem = (String)jb.getSelectedItem();
+        for(BugTracker bugTracker: bugTrackers) {
+            if(currentItem.equals(bugTracker.getName())){
+                bugTracker.init(optionsParam);
+            }
+        }
+        // AntiCsrfParam param = optionsParam.getAntiCsrfParam();
 	    // getAntiCsrfModel().setTokens(param.getTokens());
 	    // tokensOptionsPanel.setRemoveWithoutConfirmation(!param.isConfirmRemoveToken());
     }
@@ -138,9 +144,6 @@ public class OptionsBugTrackerPanel extends AbstractParamPanel implements ItemLi
                 bugTracker.save(optionsParam);
             }
         }
-	    // AntiCsrfParam antiCsrfParam = optionsParam.getAntiCsrfParam();
-	    // antiCsrfParam.setTokens(getAntiCsrfModel().getElements());
-	    // antiCsrfParam.setConfirmRemoveToken(!tokensOptionsPanel.isRemoveWithoutConfirmation());
     }
 
     @Override

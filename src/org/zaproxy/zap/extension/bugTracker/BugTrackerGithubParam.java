@@ -35,7 +35,7 @@ public class BugTrackerGithubParam extends AbstractParam {
 
     private static final String GITHUB_BASE_KEY = "github";
     
-    private static final String ALL_CONFIGS_KEY = ANTI_CSRF_BASE_KEY + ".configs.config";
+    private static final String ALL_CONFIGS_KEY = GITHUB_BASE_KEY + ".configs.config";
     
     private static final String CONFIG_NAME_KEY = "name";
     private static final String CONFIG_PASSWORD_KEY = "password";
