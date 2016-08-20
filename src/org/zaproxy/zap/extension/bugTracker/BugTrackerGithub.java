@@ -70,6 +70,7 @@ import javax.swing.border.EmptyBorder;
 import java.awt.event.ItemListener;
 import java.awt.event.ItemEvent;
 import org.parosproxy.paros.model.OptionsParam;
+import org.parosproxy.paros.view.AbstractParamPanel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -293,6 +294,15 @@ public class BugTrackerGithub extends BugTracker {
         return githubModel;
     }
 
+    private BugTrackerGithubParam options;
+
+    public BugTrackerGithubParam getOptions() {
+        if (options == null) {
+            options = new BugTrackerGithubParam();
+        }
+        return options;
+    }
+
     public void init(OptionsParam optionsParam) {
         BugTrackerGithubParam githubParam = optionsParam.getParamSet(BugTrackerGithubParam.class);
         getGithubModel().setConfigs(githubParam.getConfigs());
@@ -305,7 +315,7 @@ public class BugTrackerGithub extends BugTracker {
         // githubParam.setConfirmRemoveToken(!githubPanel.isRemoveWithoutConfirmation());
     }
 
-    private static class BugTrackerGithubMultipleOptionsPanel extends AbstractMultipleOptionsTablePanel<BugTrackerGithubConfigParams> {
+    public static class BugTrackerGithubMultipleOptionsPanel extends AbstractMultipleOptionsTablePanel<BugTrackerGithubConfigParams> {
         
         private static final long serialVersionUID = -115340627058929308L;
         
@@ -383,5 +393,15 @@ public class BugTrackerGithub extends BugTracker {
             return false;
         }
     }
+
+    private BugTrackerGithubOptionsPanel optionsPanel;
+
+    public BugTrackerGithubOptionsPanel getOptionsPanel() {
+        if (optionsPanel == null) {
+            optionsPanel = new BugTrackerGithubOptionsPanel();
+        }
+        return optionsPanel;
+    }
+
 
 }

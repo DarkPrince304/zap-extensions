@@ -82,6 +82,7 @@ import org.zaproxy.zap.model.StructuralNode;
 import org.zaproxy.zap.model.StructuralSiteNode;
 import org.zaproxy.zap.view.AbstractContextPropertiesPanel;
 import org.zaproxy.zap.view.ContextPanelFactory;
+import org.parosproxy.paros.view.AbstractParamPanel;
 /**
  * A ZAP Extension to help user raise issues in bug trackers from within ZAP.
  */
@@ -194,6 +195,11 @@ public class ExtensionBugTracker extends ExtensionAdaptor implements ContextPane
 	public void hook(ExtensionHook extensionHook) {
 	    super.hook(extensionHook);
 
+        BugTrackerGithub githubTracker = new BugTrackerGithub();
+        extensionHook.addOptionsParamSet(githubTracker.getOptions());
+        // BugTrackerBugzilla bugzillaTracker = new BugTrackerBugzilla();
+        // extensionHook.addOptionsParamSet(bugzillaTracker.getOptions());
+
 	    extensionHook.addSessionListener(this);
 	    
 		// Register this as a context data factory
@@ -201,13 +207,36 @@ public class ExtensionBugTracker extends ExtensionAdaptor implements ContextPane
 
 		if (getView() != null) {
 			// Factory for generating Session Context alertFilters panels
-			addBugTracker(new BugTrackerGithub());
+			addBugTracker(githubTracker);
 			addBugTracker(new BugTrackerBugzilla());
 			for(BugTracker bug: bugTrackers) {
 				System.out.println(bug.getName());
 			}
 			getView().addContextPanelFactory(this);
 	        extensionHook.getHookView().addOptionPanel(getOptionsBugTrackerPanel());
+			View.getSingleton().getOptionsDialog("").addParamPanel(new String[]{"Bug Trackers"}, githubTracker.getOptionsPanel(), true);
+			View.getSingleton().getOptionsDialog("").addParamPanel(new String[]{"Bug Trackers"}, "Bugzilla", new AbstractParamPanel() {
+               
+				@Override
+				public void validateParam(Object arg0) throws Exception {
+
+				}
+
+				@Override
+				public void saveParam(Object arg0) throws Exception {
+
+				}
+
+				@Override
+				public void initParam(Object arg0) {
+
+				}
+
+				@Override
+				public String getHelpIndex() {
+				    return null;
+				}
+            }, true);
 	    	extensionHook.getHookMenu().addPopupMenuItem(getPopupMsgRaiseSemiAuto());
 		}
 
