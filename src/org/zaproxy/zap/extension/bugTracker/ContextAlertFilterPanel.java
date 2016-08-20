@@ -56,7 +56,7 @@ import org.zaproxy.zap.view.AbstractContextPropertiesPanel;
 import org.zaproxy.zap.view.AbstractMultipleOptionsTablePanel;
 import org.zaproxy.zap.view.LayoutHelper;
 
-public class ContextAlertFilterPanel extends AbstractContextPropertiesPanel implements ItemListener {
+public class ContextAlertFilterPanel extends AbstractContextPropertiesPanel {
 
 	private AlertFiltersMultipleOptionsPanel alertFilterOptionsPanel;
 	private AlertFiltersMultipleOptionsPanel alertFilterOptionsPanel1;
@@ -65,11 +65,8 @@ public class ContextAlertFilterPanel extends AbstractContextPropertiesPanel impl
 	private AlertFilterTableModel alertFilterTableModel;
     private JLabel jl = new JLabel("Choose a Bug Tracker to Configure");
     private List<String> item = new ArrayList<String>();
-    private JComboBox jb = null;
     private GridBagConstraints c = null;
     private JPanel panelBugTrackers = null;
-	private BugTrackerGithubTableModel githubModel = null;
-	private BugTrackerBugzillaTableModel bugzillaModel = null;
 
 	/** The Constant serialVersionUID. */
 	private static final long serialVersionUID = -3920598166129639573L;
@@ -107,43 +104,6 @@ public class ContextAlertFilterPanel extends AbstractContextPropertiesPanel impl
         panel.add(alertFilterOptionsPanel, BorderLayout.CENTER);
         add(panel, c);
 
-        List<BugTracker> bugTrackers = extension.getBugTrackers();
-        for(BugTracker bugTracker: bugTrackers) {
-        	item.add(bugTracker.getName());
-        }
-		jb = new JComboBox(item.toArray());
-		c.weighty = 0.02D;
-		c.gridx = 0;
-		c.gridy = 1;
-        add(jb, c);
-        jb.addItemListener(this);
-        
-        BugTrackerGithub githubConfig = new BugTrackerGithub();
-
-        c.gridwidth = 2;
-        c.gridx = 0;
-        c.gridy = 2;
-        c.weighty = 0.58D;
-
-        panelBugTrackers = githubConfig.getConfigPanel();
-
-        add(panelBugTrackers, c);
-    }
-
-    public void itemStateChanged(ItemEvent ie)
-    {
-        String getItem = (String)jb.getSelectedItem();
-        
-        List<BugTracker> bugTrackers = extension.getBugTrackers();
-        for(BugTracker bugTracker: bugTrackers) {
-        	if(getItem.equals(bugTracker.getName())) {
-        		remove(panelBugTrackers);
-        		panelBugTrackers = bugTracker.getConfigPanel();
-        		add(panelBugTrackers, c);
-        		validate();
-        		break;
-        	}
-        }
     }
 
 	@Override

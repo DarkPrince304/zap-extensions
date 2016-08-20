@@ -40,7 +40,7 @@ class DialogModifyGithubConfig extends DialogAddGithubConfig {
         return CONFIRM_BUTTON_LABEL;
     }
 
-    public void setConfig(BugTrackerGithubParams config) {
+    public void setConfig(BugTrackerGithubConfigParams config) {
         this.config = config;
     }
     

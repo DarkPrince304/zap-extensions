@@ -24,7 +24,7 @@ import java.util.List;
 import org.parosproxy.paros.Constant;
 import org.zaproxy.zap.view.AbstractMultipleOptionsTableModel;
 
-public class BugTrackerGithubTableModel extends AbstractMultipleOptionsTableModel<BugTrackerGithubParams> {
+public class BugTrackerGithubTableModel extends AbstractMultipleOptionsTableModel<BugTrackerGithubConfigParams> {
 
 	private static final long serialVersionUID = 1L;
 
@@ -35,25 +35,25 @@ public class BugTrackerGithubTableModel extends AbstractMultipleOptionsTableMode
     
 	private static final int COLUMN_COUNT = COLUMN_NAMES.length;
 	
-    private List<BugTrackerGithubParams> configs = new ArrayList<>(0);
+    private List<BugTrackerGithubConfigParams> configs = new ArrayList<>(0);
     
     public BugTrackerGithubTableModel() {
         super();
     }
     
     @Override
-    public List<BugTrackerGithubParams> getElements() {
+    public List<BugTrackerGithubConfigParams> getElements() {
         return configs;
     }
 
     /**
      * @param configs The configs to set.
      */
-    public void setConfigs(List<BugTrackerGithubParams> configs) {
+    public void setConfigs(List<BugTrackerGithubConfigParams> configs) {
 		this.configs = new ArrayList<>(configs.size());
 		
-		for (BugTrackerGithubParams config : configs) {
-			this.configs.add(new BugTrackerGithubParams(config));
+		for (BugTrackerGithubConfigParams config : configs) {
+			this.configs.add(new BugTrackerGithubConfigParams(config));
 		}
     	
   	  	fireTableDataChanged();

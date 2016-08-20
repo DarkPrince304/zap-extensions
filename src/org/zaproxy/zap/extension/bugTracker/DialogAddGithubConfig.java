@@ -54,8 +54,8 @@ class DialogAddGithubConfig extends AbstractFormDialog {
     private ZapTextField repoUrlTextField;
     private JCheckBox enabledCheckBox;
     
-    protected BugTrackerGithubParams config;
-    private List<BugTrackerGithubParams> configs;
+    protected BugTrackerGithubConfigParams config;
+    private List<BugTrackerGithubConfigParams> configs;
     
     public DialogAddGithubConfig(Dialog owner) {
         super(owner, DIALOG_TITLE);
@@ -121,7 +121,7 @@ class DialogAddGithubConfig extends AbstractFormDialog {
     @Override
     protected boolean validateFields() {
         String configName = getNameTextField().getText();
-        for (BugTrackerGithubParams t : configs) {
+        for (BugTrackerGithubConfigParams t : configs) {
             if (configName.equalsIgnoreCase(t.getName())) {
                 JOptionPane.showMessageDialog(this, TEXT_NAME_REPEATED_DIALOG,
                         TITLE_NAME_REPEATED_DIALOG,
@@ -136,7 +136,7 @@ class DialogAddGithubConfig extends AbstractFormDialog {
     
     @Override
     protected void performAction() {
-        config = new BugTrackerGithubParams(getNameTextField().getText(), getPasswordTextField().getText(), getRepoUrlTextField().getText());
+        config = new BugTrackerGithubConfigParams(getNameTextField().getText(), getPasswordTextField().getText(), getRepoUrlTextField().getText());
     }
     
     @Override
@@ -149,7 +149,7 @@ class DialogAddGithubConfig extends AbstractFormDialog {
         getRepoUrlTextField().discardAllEdits();
     }
 
-    public BugTrackerGithubParams getConfig() {
+    public BugTrackerGithubConfigParams getConfig() {
         return config;
     }
     
@@ -248,7 +248,7 @@ class DialogAddGithubConfig extends AbstractFormDialog {
         return enabledCheckBox;
     }
 
-    public void setConfigs(List<BugTrackerGithubParams> configs) {
+    public void setConfigs(List<BugTrackerGithubConfigParams> configs) {
         this.configs = configs;
     }
 

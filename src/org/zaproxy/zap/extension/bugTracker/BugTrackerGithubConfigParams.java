@@ -21,23 +21,23 @@ package org.zaproxy.zap.extension.bugTracker;
 
 import org.zaproxy.zap.utils.Enableable;
 
-class BugTrackerGithubParams extends Enableable {
+class BugTrackerGithubConfigParams extends Enableable {
 
     private String username;
     private String password;
     private String repoUrl;
 
-    public BugTrackerGithubParams() {
+    public BugTrackerGithubConfigParams() {
         this("", "", "");
     }
 
-    public BugTrackerGithubParams(String username, String password, String repoUrl) {
+    public BugTrackerGithubConfigParams(String username, String password, String repoUrl) {
         this.username = username;
         this.password = password;
         this.repoUrl = repoUrl;
     }
 
-    public BugTrackerGithubParams(BugTrackerGithubParams config) {
+    public BugTrackerGithubConfigParams(BugTrackerGithubConfigParams config) {
         this(config.username, config.password, config.repoUrl);
     }
 
@@ -81,7 +81,7 @@ class BugTrackerGithubParams extends Enableable {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        BugTrackerGithubParams other = (BugTrackerGithubParams) obj;
+        BugTrackerGithubConfigParams other = (BugTrackerGithubConfigParams) obj;
         if (username == null) {
             if (other.username != null) {
                 return false;

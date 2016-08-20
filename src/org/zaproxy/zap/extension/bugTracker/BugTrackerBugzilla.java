@@ -44,6 +44,42 @@ import java.awt.event.ActionEvent;
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 
+import java.awt.CardLayout;
+import java.awt.Component;
+import java.awt.GridBagLayout;
+import java.awt.GridBagConstraints;
+import java.awt.Insets;
+
+import javax.swing.JCheckBox;
+import javax.swing.JLabel;
+import javax.swing.JComboBox;
+import javax.swing.JButton;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import java.awt.BorderLayout;
+import javax.swing.SortOrder;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import java.awt.Dimension;
+import java.awt.GridLayout;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import javax.swing.border.EmptyBorder;
+import java.awt.event.ItemListener;
+import java.awt.event.ItemEvent;
+
+import java.util.ArrayList;
+import java.util.List;
+import org.parosproxy.paros.Constant;
+import org.parosproxy.paros.model.Session;
+import org.parosproxy.paros.view.View;
+import org.zaproxy.zap.model.Context;
+import org.zaproxy.zap.view.AbstractContextPropertiesPanel;
+import org.zaproxy.zap.view.AbstractMultipleOptionsTablePanel;
+import org.zaproxy.zap.view.LayoutHelper;
+
 public class BugTrackerBugzilla extends BugTracker {
 
     private String NAME = "Bugzilla";
@@ -60,6 +96,8 @@ public class BugTrackerBugzilla extends BugTracker {
     private String summaryIssue = null;
     private String descriptionIssue = null;
     private JPanel configTable = null;
+    private JPanel bugzillaPanel = null;
+    private BugTrackerBugzillaTableModel bugzillaModel = null;
 
     private static final Logger log = Logger.getLogger(BugTrackerBugzilla.class);
 
@@ -73,46 +111,7 @@ public class BugTrackerBugzilla extends BugTracker {
     }
 
     public void initializeConfigTable() {
-        String[] columnNames = {"Username/Email","Password","Bugzilla URL"};
-        Object[][] data = {
-        {"Kathy", "Smith", "https://landfill.bugzilla.org/bugzilla-5.0-branch/"},
-        {"John", "Doe", "https://landfill.bugzilla.org/bugzilla-5.0-branch/"},
-        {"Sue", "Black", "https://landfill.bugzilla.org/bugzilla-5.0-branch/"},
-        {"Jane", "White", "https://landfill.bugzilla.org/bugzilla-5.0-branch/"},
-        {"Joe", "Brown", "https://landfill.bugzilla.org/bugzilla-5.0-branch/"}
-        };
-
-
-        configTable = new JPanel(new BorderLayout());
-        final DefaultTableModel model = new DefaultTableModel(data, columnNames);
-        final JTable table = new JTable(model);
-
-        JPanel buttonLayout = new JPanel();
-        buttonLayout.setLayout(new FlowLayout(FlowLayout.CENTER));
-        JButton add = new JButton("Add");
-        JButton modify = new JButton("Modify");
-        JButton remove = new JButton("Remove");
-        add.addActionListener(new ActionListener() {
-
-            @Override
-            public void actionPerformed(ActionEvent arg0) {
-                // check for selected row first
-                if (table.getSelectedRow() != -1) {
-                    // remove selected row from the model
-                    model.removeRow(table.getSelectedRow());
-                    model.addRow(new Object[]{"Joe", "Brown"});
-                }
-            }
-        });
- 
-        buttonLayout.add(add);
-        buttonLayout.add(modify);
-        buttonLayout.add(remove);
-        //Create the scroll pane and add the table to it.
-        JScrollPane scrollPane = new JScrollPane(table);
-        configTable.add(new JLabel("Bugzilla Configuration"), BorderLayout.PAGE_START);
-        configTable.add(scrollPane, BorderLayout.CENTER);
-        configTable.add(buttonLayout, BorderLayout.SOUTH);
+        bugzillaPanel = new BugTrackerBugzillaMultipleOptionsPanel(getBugzillaModel());
     }
 
     // public JPanel getCredentialsTable() {
@@ -120,7 +119,7 @@ public class BugTrackerBugzilla extends BugTracker {
     // }
 
     public JPanel getConfigPanel() {
-        return configTable;
+        return bugzillaPanel;
     }
 
     public void createDialogs(RaiseSemiAutoIssueDialog dialog, int index) {
@@ -259,5 +258,97 @@ public class BugTrackerBugzilla extends BugTracker {
     
     public String getId() {
         return NAME.toLowerCase();
+    }
+
+      /**
+     * This method initializes authModel    
+     *  
+     * @return org.parosproxy.paros.view.OptionsAuthenticationTableModel    
+     */    
+    private BugTrackerBugzillaTableModel getBugzillaModel() {
+        if (bugzillaModel == null) {
+            bugzillaModel = new BugTrackerBugzillaTableModel();
+        }
+        return bugzillaModel;
+    }
+
+
+    private static class BugTrackerBugzillaMultipleOptionsPanel extends AbstractMultipleOptionsTablePanel<BugTrackerBugzillaParams> {
+        
+        private static final long serialVersionUID = -115340627058929308L;
+        
+        private static final String REMOVE_DIALOG_TITLE = Constant.messages.getString("bugTracker.trackers.bugzilla.dialog.config.remove.title");
+        private static final String REMOVE_DIALOG_TEXT = Constant.messages.getString("bugTracker.trackers.bugzilla.dialog.config.remove.text");
+        
+        private static final String REMOVE_DIALOG_CONFIRM_BUTTON_LABEL = Constant.messages.getString("bugTracker.trackers.bugzilla.dialog.config.remove.button.confirm");
+        private static final String REMOVE_DIALOG_CANCEL_BUTTON_LABEL = Constant.messages.getString("bugTracker.trackers.bugzilla.dialog.config.remove.button.cancel");
+        
+        private static final String REMOVE_DIALOG_CHECKBOX_LABEL = Constant.messages.getString("bugTracker.trackers.bugzilla.dialog.config.remove.checkbox.label");
+        
+        private DialogAddBugzillaConfig addDialog = null;
+        private DialogModifyBugzillaConfig modifyDialog = null;
+        
+        private BugTrackerBugzillaTableModel model;
+        
+        public BugTrackerBugzillaMultipleOptionsPanel(BugTrackerBugzillaTableModel model) {
+            super(model);
+            
+            this.model = model;
+            
+            getTable().getColumnExt(0).setPreferredWidth(20);
+            getTable().setSortOrder(1, SortOrder.ASCENDING);
+        }
+
+        @Override
+        public BugTrackerBugzillaParams showAddDialogue() {
+            if (addDialog == null) {
+                addDialog = new DialogAddBugzillaConfig(View.getSingleton().getOptionsDialog(null));
+                addDialog.pack();
+            }
+            addDialog.setConfigs(model.getElements());
+            addDialog.setVisible(true);
+            
+            BugTrackerBugzillaParams config = addDialog.getConfig();
+            addDialog.clear();
+            
+            return config;
+        }
+        
+        @Override
+        public BugTrackerBugzillaParams showModifyDialogue(BugTrackerBugzillaParams e) {
+            if (modifyDialog == null) {
+                modifyDialog = new DialogModifyBugzillaConfig(View.getSingleton().getOptionsDialog(null));
+                modifyDialog.pack();
+            }
+            modifyDialog.setConfigs(model.getElements());
+            modifyDialog.setConfig(e);
+            modifyDialog.setVisible(true);
+            
+            BugTrackerBugzillaParams config = modifyDialog.getConfig();
+            modifyDialog.clear();
+            
+            if (!config.equals(e)) {
+                return config;
+            }
+            
+            return null;
+        }
+        
+        @Override
+        public boolean showRemoveDialogue(BugTrackerBugzillaParams e) {
+            JCheckBox removeWithoutConfirmationCheckBox = new JCheckBox(REMOVE_DIALOG_CHECKBOX_LABEL);
+            Object[] messages = {REMOVE_DIALOG_TEXT, " ", removeWithoutConfirmationCheckBox};
+            int option = JOptionPane.showOptionDialog(View.getSingleton().getMainFrame(), messages, REMOVE_DIALOG_TITLE,
+                    JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE,
+                    null, new String[] { REMOVE_DIALOG_CONFIRM_BUTTON_LABEL, REMOVE_DIALOG_CANCEL_BUTTON_LABEL }, null);
+
+            if (option == JOptionPane.OK_OPTION) {
+                setRemoveWithoutConfirmation(removeWithoutConfirmationCheckBox.isSelected());
+                
+                return true;
+            }
+            
+            return false;
+        }
     }
 }

@@ -292,8 +292,11 @@ public class BugTrackerGithub extends BugTracker {
         return githubModel;
     }
 
+    private void save(OptionsParam optionsParam) {
+        
+    }
 
-    private static class BugTrackerGithubMultipleOptionsPanel extends AbstractMultipleOptionsTablePanel<BugTrackerGithubParams> {
+    private static class BugTrackerGithubMultipleOptionsPanel extends AbstractMultipleOptionsTablePanel<BugTrackerGithubConfigParams> {
         
         private static final long serialVersionUID = -115340627058929308L;
         
@@ -320,7 +323,7 @@ public class BugTrackerGithub extends BugTracker {
         }
 
         @Override
-        public BugTrackerGithubParams showAddDialogue() {
+        public BugTrackerGithubConfigParams showAddDialogue() {
             if (addDialog == null) {
                 addDialog = new DialogAddGithubConfig(View.getSingleton().getOptionsDialog(null));
                 addDialog.pack();
@@ -328,14 +331,14 @@ public class BugTrackerGithub extends BugTracker {
             addDialog.setConfigs(model.getElements());
             addDialog.setVisible(true);
             
-            BugTrackerGithubParams config = addDialog.getConfig();
+            BugTrackerGithubConfigParams config = addDialog.getConfig();
             addDialog.clear();
             
             return config;
         }
         
         @Override
-        public BugTrackerGithubParams showModifyDialogue(BugTrackerGithubParams e) {
+        public BugTrackerGithubConfigParams showModifyDialogue(BugTrackerGithubConfigParams e) {
             if (modifyDialog == null) {
                 modifyDialog = new DialogModifyGithubConfig(View.getSingleton().getOptionsDialog(null));
                 modifyDialog.pack();
@@ -344,7 +347,7 @@ public class BugTrackerGithub extends BugTracker {
             modifyDialog.setConfig(e);
             modifyDialog.setVisible(true);
             
-            BugTrackerGithubParams config = modifyDialog.getConfig();
+            BugTrackerGithubConfigParams config = modifyDialog.getConfig();
             modifyDialog.clear();
             
             if (!config.equals(e)) {
@@ -355,7 +358,7 @@ public class BugTrackerGithub extends BugTracker {
         }
         
         @Override
-        public boolean showRemoveDialogue(BugTrackerGithubParams e) {
+        public boolean showRemoveDialogue(BugTrackerGithubConfigParams e) {
             JCheckBox removeWithoutConfirmationCheckBox = new JCheckBox(REMOVE_DIALOG_CHECKBOX_LABEL);
             Object[] messages = {REMOVE_DIALOG_TEXT, " ", removeWithoutConfirmationCheckBox};
             int option = JOptionPane.showOptionDialog(View.getSingleton().getMainFrame(), messages, REMOVE_DIALOG_TITLE,
@@ -371,4 +374,5 @@ public class BugTrackerGithub extends BugTracker {
             return false;
         }
     }
+
 }
