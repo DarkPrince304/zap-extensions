@@ -56,13 +56,13 @@ import org.zaproxy.zap.view.AbstractContextPropertiesPanel;
 import org.zaproxy.zap.view.AbstractMultipleOptionsTablePanel;
 import org.zaproxy.zap.view.LayoutHelper;
 
-public class ContextAlertFilterPanel extends AbstractContextPropertiesPanel {
+public class ContextBugTrackerRulePanel extends AbstractContextPropertiesPanel {
 
-	private AlertFiltersMultipleOptionsPanel alertFilterOptionsPanel;
-	private AlertFiltersMultipleOptionsPanel alertFilterOptionsPanel1;
-	private ContextAlertFilterManager contextManager;
+	private BugTrackerRulesMultipleOptionsPanel bugTrackerRuleOptionsPanel;
+	private BugTrackerRulesMultipleOptionsPanel bugTrackerRuleOptionsPanel1;
+	private ContextBugTrackerRuleManager contextManager;
 	private ExtensionBugTracker extension;
-	private AlertFilterTableModel alertFilterTableModel;
+	private BugTrackerRuleTableModel bugTrackerRuleTableModel;
     private JLabel jl = new JLabel("Choose a Bug Tracker to Configure");
     private List<String> item = new ArrayList<String>();
     private GridBagConstraints c = null;
@@ -72,10 +72,10 @@ public class ContextAlertFilterPanel extends AbstractContextPropertiesPanel {
 	private static final long serialVersionUID = -3920598166129639573L;
 	private static final String PANEL_NAME = Constant.messages.getString("bugTracker.panel.title");
 
-	public ContextAlertFilterPanel(ExtensionBugTracker extension, int contextId) {
+	public ContextBugTrackerRulePanel(ExtensionBugTracker extension, int contextId) {
 		super(contextId);
 		this.extension = extension;
-		this.contextManager = extension.getContextAlertFilterManager(contextId);
+		this.contextManager = extension.getContextBugTrackerRuleManager(contextId);
 		initialize();
 	}
 
@@ -96,22 +96,22 @@ public class ContextAlertFilterPanel extends AbstractContextPropertiesPanel {
 
         JPanel panel = new JPanel(new BorderLayout());
         panel.add(new JLabel("Rules"), BorderLayout.PAGE_START);
-        alertFilterTableModel = new AlertFilterTableModel();
-        alertFilterOptionsPanel = new AlertFiltersMultipleOptionsPanel(
+        bugTrackerRuleTableModel = new BugTrackerRuleTableModel();
+        bugTrackerRuleOptionsPanel = new BugTrackerRulesMultipleOptionsPanel(
                 this.extension,
-                alertFilterTableModel,
+                bugTrackerRuleTableModel,
                 getContextIndex());
-        panel.add(alertFilterOptionsPanel, BorderLayout.CENTER);
+        panel.add(bugTrackerRuleOptionsPanel, BorderLayout.CENTER);
         add(panel, c);
 
     }
 
 	@Override
 	public String getHelpIndex() {
-		return "addon.alertFilter";
+		return "addon.bugTrackerRule";
 	}
 
-	public static class AlertFiltersMultipleOptionsPanel extends AbstractMultipleOptionsTablePanel<AlertFilter> {
+	public static class BugTrackerRulesMultipleOptionsPanel extends AbstractMultipleOptionsTablePanel<BugTrackerRule> {
 
 		private static final long serialVersionUID = -7216673905642941770L;
 
@@ -128,12 +128,12 @@ public class ContextAlertFilterPanel extends AbstractContextPropertiesPanel {
 		private static final String REMOVE_DIALOG_CHECKBOX_LABEL = 
 				Constant.messages.getString("bugTracker.dialog.remove.checkbox.label");
 
-		private DialogAddAlertFilter addDialog = null;
-		private DialogModifyAlertFilter modifyDialog = null;
+		private DialogAddBugTrackerRule addDialog = null;
+		private DialogModifyBugTrackerRule modifyDialog = null;
 		private ExtensionBugTracker extension;
 		private Context uiSharedContext;
 
-		public AlertFiltersMultipleOptionsPanel(ExtensionBugTracker extension, AlertFilterTableModel model,
+		public BugTrackerRulesMultipleOptionsPanel(ExtensionBugTracker extension, BugTrackerRuleTableModel model,
 				int contextId) {
 			super(model);
 			this.extension = extension;
@@ -151,39 +151,39 @@ public class ContextAlertFilterPanel extends AbstractContextPropertiesPanel {
 		}
 
 		@Override
-		public AlertFilter showAddDialogue() {
+		public BugTrackerRule showAddDialogue() {
 			if (addDialog == null) {
-				addDialog = new DialogAddAlertFilter(View.getSingleton().getOptionsDialog(null), this.extension);
+				addDialog = new DialogAddBugTrackerRule(View.getSingleton().getOptionsDialog(null), this.extension);
 				addDialog.pack();
 			}
 			addDialog.setWorkingContext(this.uiSharedContext);
 			addDialog.setVisible(true);
 
-			AlertFilter alertFilter = addDialog.getAlertFilter();
+			BugTrackerRule bugTrackerRule = addDialog.getBugTrackerRule();
 			addDialog.clear();
 
-			return alertFilter;
+			return bugTrackerRule;
 		}
 
 		@Override
-		public AlertFilter showModifyDialogue(AlertFilter alertFilter) {
+		public BugTrackerRule showModifyDialogue(BugTrackerRule bugTrackerRule) {
 			if (modifyDialog == null) {
-				modifyDialog = new DialogModifyAlertFilter(View.getSingleton().getOptionsDialog(null),
+				modifyDialog = new DialogModifyBugTrackerRule(View.getSingleton().getOptionsDialog(null),
 						this.extension);
 				modifyDialog.pack();
 			}
 			modifyDialog.setWorkingContext(this.uiSharedContext);
-			modifyDialog.setAlertFilter(alertFilter);
+			modifyDialog.setBugTrackerRule(bugTrackerRule);
 			modifyDialog.setVisible(true);
 
-			alertFilter = modifyDialog.getAlertFilter();
+			bugTrackerRule = modifyDialog.getBugTrackerRule();
 			modifyDialog.clear();
 
-			return alertFilter;
+			return bugTrackerRule;
 		}
 
 		@Override
-		public boolean showRemoveDialogue(AlertFilter e) {
+		public boolean showRemoveDialogue(BugTrackerRule e) {
 			JCheckBox removeWithoutConfirmationCheckBox = new JCheckBox(REMOVE_DIALOG_CHECKBOX_LABEL);
 			Object[] messages = { REMOVE_DIALOG_TEXT, " ", removeWithoutConfirmationCheckBox };
 			int option = JOptionPane.showOptionDialog(View.getSingleton().getMainFrame(), messages,
@@ -208,8 +208,8 @@ public class ContextAlertFilterPanel extends AbstractContextPropertiesPanel {
 
 	@Override
 	public void initContextData(Session session, Context uiCommonContext) {
-		this.alertFilterOptionsPanel.setWorkingContext(uiCommonContext);
-		this.alertFilterTableModel.setAlertFilters(this.contextManager.getAlertFilters());
+		this.bugTrackerRuleOptionsPanel.setWorkingContext(uiCommonContext);
+		this.bugTrackerRuleTableModel.setBugTrackerRules(this.contextManager.getBugTrackerRules());
 	}
 
 	@Override
@@ -219,7 +219,7 @@ public class ContextAlertFilterPanel extends AbstractContextPropertiesPanel {
 
 	@Override
 	public void saveContextData(Session session) throws Exception {
-		this.contextManager.setAlertFilters(alertFilterTableModel.getAlertFilters());
+		this.contextManager.setBugTrackerRules(bugTrackerRuleTableModel.getBugTrackerRules());
 
 	}
 
@@ -228,7 +228,7 @@ public class ContextAlertFilterPanel extends AbstractContextPropertiesPanel {
 		// Data is already saved in the uiSharedContext
 	}
 
-	protected AlertFilterTableModel getAlertFiltersTableModel() {
-		return alertFilterTableModel;
+	protected BugTrackerRuleTableModel getBugTrackerRulesTableModel() {
+		return bugTrackerRuleTableModel;
 	}
 }

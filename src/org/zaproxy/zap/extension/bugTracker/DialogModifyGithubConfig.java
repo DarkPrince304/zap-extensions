@@ -56,9 +56,9 @@ class DialogModifyGithubConfig extends DialogAddGithubConfig {
     protected void init() {
         getNameTextField().setText(config.getName());
         getNameTextField().discardAllEdits();
-        getPasswordTextField().setText(config.getName());
+        getPasswordTextField().setText(config.getPassword());
         getPasswordTextField().discardAllEdits();
-        getRepoUrlTextField().setText(config.getName());
+        getRepoUrlTextField().setText(config.getRepoUrl());
         getRepoUrlTextField().discardAllEdits();
     }
 

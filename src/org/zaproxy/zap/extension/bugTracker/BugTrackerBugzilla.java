@@ -264,7 +264,7 @@ public class BugTrackerBugzilla extends BugTracker {
     }
 
 	public void raise(RaiseSemiAutoIssueDialog dialog) {
-        String url, summary, description, product, component, version, os, platform, username, password;
+        String url, summary, description, product, component, version, os, platform, username, password, configBugzilla;
         url = dialog.getStringValue(FIELD_URL);
         summary = dialog.getStringValue(FIELD_SUMMARY);
         description = dialog.getStringValue(FIELD_DESCRIPTION);
@@ -275,6 +275,17 @@ public class BugTrackerBugzilla extends BugTracker {
         platform = dialog.getStringValue(FIELD_PLATFORM);
         username = dialog.getStringValue(FIELD_USERNAME);
         password = dialog.getStringValue(FIELD_PASSWORD);
+        configBugzilla = dialog.getStringValue(FIELD_BUGZILLA_CONFIG);
+        if(url.equals("") || username.equals("") || password.equals("")) {
+            List<BugTrackerBugzillaConfigParams> configs = getOptions().getConfigs();
+            for(BugTrackerBugzillaConfigParams config: configs) {
+                if(config.getName().equals(configBugzilla)) {
+                    url = config.getBugzillaUrl();
+                    username = config.getName();
+                    password = config.getPassword();
+                }
+            }
+        }
         try {
             raiseOnTracker(url, summary, description, product, component, version, os, platform, username, password);
             System.out.println("Raised");

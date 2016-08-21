@@ -56,9 +56,9 @@ class DialogModifyBugzillaConfig extends DialogAddBugzillaConfig {
     protected void init() {
         getNameTextField().setText(config.getName());
         getNameTextField().discardAllEdits();
-        getPasswordTextField().setText(config.getName());
+        getPasswordTextField().setText(config.getPassword());
         getPasswordTextField().discardAllEdits();
-        getBugzillaUrlTextField().setText(config.getName());
+        getBugzillaUrlTextField().setText(config.getBugzillaUrl());
         getBugzillaUrlTextField().discardAllEdits();
     }
 

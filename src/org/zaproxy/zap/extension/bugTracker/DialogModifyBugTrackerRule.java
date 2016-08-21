@@ -23,7 +23,7 @@ import java.awt.Dialog;
 
 import org.parosproxy.paros.Constant;
 
-public class DialogModifyAlertFilter extends DialogAddAlertFilter {
+public class DialogModifyBugTrackerRule extends DialogAddBugTrackerRule {
 
 	/**
 	 * 
@@ -32,12 +32,12 @@ public class DialogModifyAlertFilter extends DialogAddAlertFilter {
 	private static final String DIALOG_TITLE = 
 			Constant.messages.getString("bugTracker.dialog.modify.title");
 
-	public DialogModifyAlertFilter(Dialog owner, ExtensionBugTracker extension) {
+	public DialogModifyBugTrackerRule(Dialog owner, ExtensionBugTracker extension) {
 		super(owner, extension, DIALOG_TITLE);
 	}
 
-	public void setAlertFilter(AlertFilter alertFilter) {
-		this.alertFilter = alertFilter;
+	public void setBugTrackerRule(BugTrackerRule bugTrackerRule) {
+		this.bugTrackerRule = bugTrackerRule;
 	}
 
 	@Override
@@ -51,15 +51,15 @@ public class DialogModifyAlertFilter extends DialogAddAlertFilter {
 			throw new IllegalStateException(
 					"A working Context should be set before setting the 'Add Dialog' visible.");
 		}
-		log.debug("Initializing modify alertFilter dialog for: " + alertFilter);
+		log.debug("Initializing modify bugTrackerRule dialog for: " + bugTrackerRule);
 		getAlertCombo().setSelectedItem(
-				ExtensionBugTracker.getRuleNameForId(alertFilter.getRuleId()));
+				ExtensionBugTracker.getRuleNameForId(bugTrackerRule.getRuleId()));
 		getNewLevelCombo().setSelectedItem(
-				AlertFilter.getNameForRisk(alertFilter.getNewRisk()));
-		getUrlTextField().setText(alertFilter.getUrl());
-		getRegexCheckBox().setSelected(alertFilter.isRegex());
+				BugTrackerRule.getNameForRisk(bugTrackerRule.getNewRisk()));
+		getUrlTextField().setText(bugTrackerRule.getUrl());
+		getRegexCheckBox().setSelected(bugTrackerRule.isRegex());
 
-		getEnabledCheckBox().setSelected(alertFilter.isEnabled());
+		getEnabledCheckBox().setSelected(bugTrackerRule.isEnabled());
 
 		this.setConfirmButtonEnabled(true);
 

@@ -161,12 +161,17 @@ public class BugTrackerGithub extends BugTracker {
             for(BugTrackerGithubConfigParams config: configs) {
                 if(config.getName().equals(currentItem)) {
                     collaborators = getCollaborators(config.getName(), config.getPassword(), config.getRepoUrl());
-                    List<String> assignees = new ArrayList<String>(collaborators);
-                    dialog.setComboFields(FIELD_ASSIGNEE_LIST, assignees, "");
+                    if(collaborators.size() > 0) {
+                        List<String> assignees = new ArrayList<String>(collaborators);
+                        dialog.setComboFields(FIELD_ASSIGNEE_LIST, assignees, ""); 
+                    } else {
+                        List<String> assignees = new ArrayList<String>();
+                        dialog.setComboFields(FIELD_ASSIGNEE_LIST, assignees, ""); 
+                    }
                 }
             }
         } catch(IOException e) {
-            log.debug(e.toString());
+            log.debug(Constant.messages.getString("bugTracker.trackers.github.issue.msg.param"));
         }
     }
 
@@ -257,7 +262,7 @@ public class BugTrackerGithub extends BugTracker {
             GHRepository repository = github.getRepository(repo);
             collaborators = repository.getCollaboratorNames();
         } catch(ArrayIndexOutOfBoundsException e) {
-            log.debug(Constant.messages.getString("bugTracker.popup.issue.msg.repo"));
+            log.debug(Constant.messages.getString("bugTracker.trackers.github.issue.msg.repo"));
         } catch(HttpException e) {
             log.debug(e.toString());
         }
@@ -278,11 +283,11 @@ public class BugTrackerGithub extends BugTracker {
             String response = issue.create().toString();
             System.out.println(response);
             if(response.contains("401")) {
-                log.debug(Constant.messages.getString("bugTracker.popup.issue.msg.auth"));
+                log.debug(Constant.messages.getString("bugTracker.trackers.github.issue.msg.auth"));
             }
             log.debug(response);
         } catch(ArrayIndexOutOfBoundsException e) {
-            log.debug(Constant.messages.getString("bugTracker.popup.issue.msg.repo"));
+            log.debug(Constant.messages.getString("bugTracker.trackers.github.issue.msg.repo"));
         } catch(HttpException e) {
             log.debug(e.toString());
         }
@@ -302,12 +307,12 @@ public class BugTrackerGithub extends BugTracker {
             raiseOnTracker(repo, title, body, labels, assignee, username, password);
             System.out.println("Raised");
         } catch(IOException e) {
-            log.debug(e.toString());
+            log.debug(Constant.messages.getString("bugTracker.trackers.github.issue.msg.param"));
         }
     }
 
     public void raise(RaiseSemiAutoIssueDialog dialog) {
-        String repo, title, body, labels, assignee, username, password;
+        String repo, title, body, labels, assignee, username, password, configGithub;
         repo = dialog.getStringValue(FIELD_REPO);
         title = dialog.getStringValue(FIELD_TITLE);
         body = dialog.getStringValue(FIELD_BODY);
@@ -315,12 +320,26 @@ public class BugTrackerGithub extends BugTracker {
         assignee = dialog.getStringValue(FIELD_ASSIGNEE_MANUAL);
         username = dialog.getStringValue(FIELD_USERNAME);
         password = dialog.getStringValue(FIELD_PASSWORD);
+        configGithub = dialog.getStringValue(FIELD_GITHUB_CONFIG);
+        if(repo.equals("") || username.equals("") || password.equals("")) {
+            List<BugTrackerGithubConfigParams> configs = getOptions().getConfigs();
+            for(BugTrackerGithubConfigParams config: configs) {
+                if(config.getName().equals(configGithub)) {
+                    repo = config.getRepoUrl();
+                    username = config.getName();
+                    password = config.getPassword();
+                }
+            }
+        }
+        if(assignee.equals("")) {
+            assignee = dialog.getStringValue(FIELD_ASSIGNEE_LIST);
+        }
         System.out.println(repo+ " "+ title + " "+ body + " " + labels + " " + assignee + " " + username + " " + password + " ");
         try {
             raiseOnTracker(repo, title, body, labels, assignee, username, password);
             System.out.println("Raised");
         } catch(IOException e) {
-            log.debug(e.toString());
+            log.debug(Constant.messages.getString("bugTracker.trackers.github.issue.msg.param"));
         }
     }
 

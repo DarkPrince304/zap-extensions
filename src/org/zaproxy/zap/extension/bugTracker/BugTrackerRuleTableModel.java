@@ -27,9 +27,9 @@ import org.zaproxy.zap.model.Context;
 import org.zaproxy.zap.view.AbstractMultipleOptionsTableModel;
 
 /**
- * A table model for holding a set of AlertFilter, for a {@link Context}.
+ * A table model for holding a set of BugTrackerRule, for a {@link Context}.
  */
-public class AlertFilterTableModel extends AbstractMultipleOptionsTableModel<AlertFilter> {
+public class BugTrackerRuleTableModel extends AbstractMultipleOptionsTableModel<BugTrackerRule> {
 
 	/** The Constant defining the table column names. */
 	private static final String[] COLUMN_NAMES = {
@@ -42,22 +42,22 @@ public class AlertFilterTableModel extends AbstractMultipleOptionsTableModel<Ale
 	private static final long serialVersionUID = 4463944219657112162L;
 
 	/** The alert filters. */
-	private List<AlertFilter> alertFilters = new ArrayList<>();
+	private List<BugTrackerRule> bugTrackerRules = new ArrayList<>();
 
 	/**
 	 * Instantiates a new alert filters table model. An internal copy of the provided list is stored.
 	 * 
-	 * @param alertFilters the alert filters
+	 * @param bugTrackerRules the alert filters
 	 */
-	public AlertFilterTableModel(List<AlertFilter> alertFilters) {
-		this.alertFilters = new ArrayList<>(alertFilters);
+	public BugTrackerRuleTableModel(List<BugTrackerRule> bugTrackerRules) {
+		this.bugTrackerRules = new ArrayList<>(bugTrackerRules);
 	}
 
 	/**
 	 * Instantiates a new user table model.
 	 */
-	public AlertFilterTableModel() {
-		this.alertFilters = new ArrayList<>();
+	public BugTrackerRuleTableModel() {
+		this.bugTrackerRules = new ArrayList<>();
 	}
 
 	@Override
@@ -67,12 +67,12 @@ public class AlertFilterTableModel extends AbstractMultipleOptionsTableModel<Ale
 
 	@Override
 	public int getRowCount() {
-		return alertFilters.size();
+		return bugTrackerRules.size();
 	}
 
 	@Override
 	public Object getValueAt(int rowIndex, int columnIndex) {
-		AlertFilter af = alertFilters.get(rowIndex);
+		BugTrackerRule af = bugTrackerRules.get(rowIndex);
 		if (af == null) {
 			return null;
 		}
@@ -91,17 +91,17 @@ public class AlertFilterTableModel extends AbstractMultipleOptionsTableModel<Ale
 	}
 
 	@Override
-	public List<AlertFilter> getElements() {
-		return alertFilters;
+	public List<BugTrackerRule> getElements() {
+		return bugTrackerRules;
 	}
 
 	/**
-	 * Gets the internal list of alertFilters managed by this model. 
+	 * Gets the internal list of bugTrackerRules managed by this model. 
 	 * 
-	 * @return the alertFilters
+	 * @return the bugTrackerRules
 	 */
-	public List<AlertFilter> getAlertFilters() {
-		return alertFilters;
+	public List<BugTrackerRule> getBugTrackerRules() {
+		return bugTrackerRules;
 	}
 
 	@Override
@@ -111,20 +111,20 @@ public class AlertFilterTableModel extends AbstractMultipleOptionsTableModel<Ale
 	}
 
 	/**
-	 * Sets a new list of alertFilters for this model. An internal copy of the provided list is stored.
+	 * Sets a new list of bugTrackerRules for this model. An internal copy of the provided list is stored.
 	 * 
-	 * @param alertFilters the new alertFilters
+	 * @param bugTrackerRules the new bugTrackerRules
 	 */
-	public void setAlertFilters(List<AlertFilter> alertFilters) {
-		this.alertFilters = new ArrayList<>(alertFilters);
+	public void setBugTrackerRules(List<BugTrackerRule> bugTrackerRules) {
+		this.bugTrackerRules = new ArrayList<>(bugTrackerRules);
 		this.fireTableDataChanged();
 	}
 	
 	/**
-	 * Removes all the alertFilters for this model.
+	 * Removes all the bugTrackerRules for this model.
 	 */
-	public void removeAllAlertFilters(){
-		this.alertFilters=new ArrayList<>();
+	public void removeAllBugTrackerRules(){
+		this.bugTrackerRules=new ArrayList<>();
 		this.fireTableDataChanged();
 	}
 	
@@ -133,9 +133,9 @@ public class AlertFilterTableModel extends AbstractMultipleOptionsTableModel<Ale
 	 *
 	 * @param af the user
 	 */
-	public void addAlertFilter(AlertFilter af){
-		this.alertFilters.add(af);
-		this.fireTableRowsInserted(this.alertFilters.size()-1, this.alertFilters.size()-1);
+	public void addBugTrackerRule(BugTrackerRule af){
+		this.bugTrackerRules.add(af);
+		this.fireTableRowsInserted(this.bugTrackerRules.size()-1, this.bugTrackerRules.size()-1);
 	}
 
 	@Override
@@ -163,7 +163,7 @@ public class AlertFilterTableModel extends AbstractMultipleOptionsTableModel<Ale
 	public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
 		if (columnIndex == 0) {
 			if (aValue instanceof Boolean) {
-				alertFilters.get(rowIndex).setEnabled(((Boolean) aValue).booleanValue());
+				bugTrackerRules.get(rowIndex).setEnabled(((Boolean) aValue).booleanValue());
 				fireTableCellUpdated(rowIndex, columnIndex);
 			}
 		}

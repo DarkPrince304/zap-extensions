@@ -25,9 +25,9 @@ import org.parosproxy.paros.Constant;
 import org.parosproxy.paros.core.scanner.Alert;
 import org.zaproxy.zap.utils.Enableable;
 
-public class AlertFilter extends Enableable {
+public class BugTrackerRule extends Enableable {
 
-	/** The Constant FIELD_SEPARATOR used for separating AlertFilter's field during serialization. */
+	/** The Constant FIELD_SEPARATOR used for separating BugTrackerRule's field during serialization. */
 	private static final String FIELD_SEPARATOR = ";";
 
 	private int contextId;
@@ -38,12 +38,12 @@ public class AlertFilter extends Enableable {
 	private String url;
 	private boolean regex;
 
-	private static final Logger log = Logger.getLogger(AlertFilter.class);
+	private static final Logger log = Logger.getLogger(BugTrackerRule.class);
 
-	public AlertFilter() {
+	public BugTrackerRule() {
 	}
 
-	public AlertFilter(int contextId, int ruleId, int newRisk, String url,
+	public BugTrackerRule(int contextId, int ruleId, int newRisk, String url,
 			boolean regex, boolean enabled) {
 		super();
 		this.contextId = contextId;
@@ -125,53 +125,53 @@ public class AlertFilter extends Enableable {
 	}
 	
 	/**
-	 * Encodes the AlertFilter in a String. Fields that contain strings are Base64 encoded.
+	 * Encodes the BugTrackerRule in a String. Fields that contain strings are Base64 encoded.
 	 * 
-	 * @param alertFilter the AlertFilter
+	 * @param bugTrackerRule the BugTrackerRule
 	 * @return the encoded string
 	 */
-	public static String encode(AlertFilter alertFilteruser) {
+	public static String encode(BugTrackerRule bugTrackerRuleuser) {
 		StringBuilder out = new StringBuilder();
-		out.append(alertFilteruser.isEnabled()).append(FIELD_SEPARATOR);
-		out.append(alertFilteruser.getRuleId()).append(FIELD_SEPARATOR);
-		out.append(alertFilteruser.getNewRisk()).append(FIELD_SEPARATOR);
-		if (alertFilteruser.url != null) {
-			out.append(Base64.encodeBase64String(alertFilteruser.url.getBytes()));
+		out.append(bugTrackerRuleuser.isEnabled()).append(FIELD_SEPARATOR);
+		out.append(bugTrackerRuleuser.getRuleId()).append(FIELD_SEPARATOR);
+		out.append(bugTrackerRuleuser.getNewRisk()).append(FIELD_SEPARATOR);
+		if (bugTrackerRuleuser.url != null) {
+			out.append(Base64.encodeBase64String(bugTrackerRuleuser.url.getBytes()));
 		}
 		out.append(FIELD_SEPARATOR);
-		out.append(alertFilteruser.isRegex()).append(FIELD_SEPARATOR);
-		if (alertFilteruser.parameter != null) {
-			out.append(Base64.encodeBase64String(alertFilteruser.parameter.getBytes()));
+		out.append(bugTrackerRuleuser.isRegex()).append(FIELD_SEPARATOR);
+		if (bugTrackerRuleuser.parameter != null) {
+			out.append(Base64.encodeBase64String(bugTrackerRuleuser.parameter.getBytes()));
 		}
 		out.append(FIELD_SEPARATOR);
-		// log.debug("Encoded AlertFilter: " + out.toString());
+		// log.debug("Encoded BugTrackerRule: " + out.toString());
 		return out.toString();
 	}
 
 	/**
 	 * Decodes an User from an encoded string. The string provided as input should have been
-	 * obtained through calls to {@link #encode(AlertFilter)}.
+	 * obtained through calls to {@link #encode(BugTrackerRule)}.
 	 * @param encodedString the encoded string
 	 * @return the user
 	 */
-	protected static AlertFilter decode(int contextId, String encodedString) {
+	protected static BugTrackerRule decode(int contextId, String encodedString) {
 		String[] pieces = encodedString.split(FIELD_SEPARATOR, -1);
-		AlertFilter alertFilter = null;
+		BugTrackerRule bugTrackerRule = null;
 		try {
-			alertFilter = new AlertFilter();
-			alertFilter.setContextId(contextId);
-			alertFilter.setEnabled(Boolean.parseBoolean(pieces[0]));
-			alertFilter.setRuleId(Integer.parseInt(pieces[1]));
-			alertFilter.setNewRisk(Integer.parseInt(pieces[2]));
-			alertFilter.setUrl(new String(Base64.decodeBase64(pieces[3])));
-			alertFilter.setRegex(Boolean.parseBoolean(pieces[4]));
-			alertFilter.setParameter(new String(Base64.decodeBase64(pieces[5])));
+			bugTrackerRule = new BugTrackerRule();
+			bugTrackerRule.setContextId(contextId);
+			bugTrackerRule.setEnabled(Boolean.parseBoolean(pieces[0]));
+			bugTrackerRule.setRuleId(Integer.parseInt(pieces[1]));
+			bugTrackerRule.setNewRisk(Integer.parseInt(pieces[2]));
+			bugTrackerRule.setUrl(new String(Base64.decodeBase64(pieces[3])));
+			bugTrackerRule.setRegex(Boolean.parseBoolean(pieces[4]));
+			bugTrackerRule.setParameter(new String(Base64.decodeBase64(pieces[5])));
 		} catch (Exception ex) {
-			log.error("An error occured while decoding alertFilter from: " + encodedString, ex);
+			log.error("An error occured while decoding bugTrackerRule from: " + encodedString, ex);
 			return null;
 		}
-		// log.debug("Decoded alertFilter: " + alertFilter);
-		return alertFilter;
+		// log.debug("Decoded bugTrackerRule: " + bugTrackerRule);
+		return bugTrackerRule;
 	}
 
 	

@@ -101,16 +101,16 @@ public class ExtensionBugTracker extends ExtensionAdaptor implements ContextPane
 	private ZapMenuItem menuSemi;
 	private PopupSemiAutoIssue popupMsgRaiseSemiAuto;
 
-	public static final String CONTEXT_CONFIG_ALERT_FILTERS = Context.CONTEXT_CONFIG + ".alertFilters";
-	public static final String CONTEXT_CONFIG_ALERT_FILTER = CONTEXT_CONFIG_ALERT_FILTERS + ".filter";
+	public static final String CONTEXT_CONFIG_BUG_TRACKER_RULES = Context.CONTEXT_CONFIG + ".bugTrackerRules";
+	public static final String CONTEXT_CONFIG_BUG_TRACKER_RULE = CONTEXT_CONFIG_BUG_TRACKER_RULES + ".bugTrackerRule";
 	
-	private static final int TYPE_ALERT_FILTER = 500; // RecordContext.TYPE_USER
+	private static final int TYPE_BUG_TRACKER_RULE = 500; // RecordContext.TYPE_USER
 
-	/** The alertFilter panels, mapped to each context. */
-	private Map<Integer, ContextAlertFilterPanel> alertFilterPanelsMap = new HashMap<>();
+	/** The bugTrackerRule panels, mapped to each context. */
+	private Map<Integer, ContextBugTrackerRulePanel> bugTrackerRulePanelsMap = new HashMap<>();
 
 	/** The context managers, mapped to each context. */
-	private Map<Integer, ContextAlertFilterManager> contextManagers = new HashMap<>();
+	private Map<Integer, ContextBugTrackerRuleManager> contextManagers = new HashMap<>();
 	
 	private ExtensionAlert extAlert = null;
 	private ExtensionHistory extHistory = null;
@@ -206,7 +206,7 @@ public class ExtensionBugTracker extends ExtensionAdaptor implements ContextPane
 		Model.getSingleton().addContextDataFactory(this);
 
 		if (getView() != null) {
-			// Factory for generating Session Context alertFilters panels
+			// Factory for generating Session Context bugTrackerRules panels
 			addBugTracker(githubTracker);
 			addBugTracker(bugzillaTracker);
 			for(BugTracker bug: bugTrackers) {
@@ -221,15 +221,15 @@ public class ExtensionBugTracker extends ExtensionAdaptor implements ContextPane
 	}
 
 	/**
-	 * Gets the context alert filter manager for a given context.
+	 * Gets the context alert bugTrackerRule manager for a given context.
 	 * 
 	 * @param contextId the context id
-	 * @return the context alert filter manager
+	 * @return the context alert bugTrackerRule manager
 	 */
-	public ContextAlertFilterManager getContextAlertFilterManager(int contextId) {
-		ContextAlertFilterManager manager = contextManagers.get(contextId);
+	public ContextBugTrackerRuleManager getContextBugTrackerRuleManager(int contextId) {
+		ContextBugTrackerRuleManager manager = contextManagers.get(contextId);
 		if (manager == null) {
-			manager = new ContextAlertFilterManager(contextId);
+			manager = new ContextBugTrackerRuleManager(contextId);
 			contextManagers.put(contextId, manager);
 		}
 		return manager;
@@ -238,52 +238,52 @@ public class ExtensionBugTracker extends ExtensionAdaptor implements ContextPane
 	@Override
 	public void loadContextData(Session session, Context context) {
 		try {
-			List<String> encodedAlertFilters = session.getContextDataStrings(context.getIndex(),
-					TYPE_ALERT_FILTER);
-			ContextAlertFilterManager afManager = getContextAlertFilterManager(context.getIndex());
-			for (String e : encodedAlertFilters) {
-				AlertFilter af = AlertFilter.decode(context.getIndex(), e);
-				afManager.addAlertFilter(af);
+			List<String> encodedBugTrackerRules = session.getContextDataStrings(context.getIndex(),
+					TYPE_BUG_TRACKER_RULE);
+			ContextBugTrackerRuleManager afManager = getContextBugTrackerRuleManager(context.getIndex());
+			for (String e : encodedBugTrackerRules) {
+				BugTrackerRule af = BugTrackerRule.decode(context.getIndex(), e);
+				afManager.addBugTrackerRule(af);
 			}
 		} catch (Exception ex) {
-			log.error("Unable to load AlertFilters.", ex);
+			log.error("Unable to load BugTrackerRules.", ex);
 		}
 	}
 
 	@Override
 	public void persistContextData(Session session, Context context) {
 		try {
-			List<String> encodedAlertFilters = new ArrayList<>();
-			ContextAlertFilterManager afManager = getContextAlertFilterManager(context.getIndex());
+			List<String> encodedBugTrackerRules = new ArrayList<>();
+			ContextBugTrackerRuleManager afManager = getContextBugTrackerRuleManager(context.getIndex());
 			if (afManager != null) {
-				for (AlertFilter af : afManager.getAlertFilters()) {
-					encodedAlertFilters.add(AlertFilter.encode(af));
+				for (BugTrackerRule af : afManager.getBugTrackerRules()) {
+					encodedBugTrackerRules.add(BugTrackerRule.encode(af));
 				}
-				session.setContextData(context.getIndex(), TYPE_ALERT_FILTER, encodedAlertFilters);
+				session.setContextData(context.getIndex(), TYPE_BUG_TRACKER_RULE, encodedBugTrackerRules);
 			}
 		} catch (Exception ex) {
-			log.error("Unable to persist AlertFilters", ex);
+			log.error("Unable to persist BugTrackerRules", ex);
 		}
 	}
 
 	@Override
 	public void exportContextData(Context ctx, Configuration config) {
-		ContextAlertFilterManager m = getContextAlertFilterManager(ctx.getIndex());
+		ContextBugTrackerRuleManager m = getContextBugTrackerRuleManager(ctx.getIndex());
 		if (m != null) {
-			for (AlertFilter af : m.getAlertFilters()) {
-				config.addProperty(CONTEXT_CONFIG_ALERT_FILTER, 
-						AlertFilter.encode(af));
+			for (BugTrackerRule af : m.getBugTrackerRules()) {
+				config.addProperty(CONTEXT_CONFIG_BUG_TRACKER_RULE, 
+						BugTrackerRule.encode(af));
 			}
 		}
 	}
 
 	@Override
 	public void importContextData(Context ctx, Configuration config) {
-		List<Object> list = config.getList(CONTEXT_CONFIG_ALERT_FILTER);
-		ContextAlertFilterManager m = getContextAlertFilterManager(ctx.getIndex());
+		List<Object> list = config.getList(CONTEXT_CONFIG_BUG_TRACKER_RULE);
+		ContextBugTrackerRuleManager m = getContextBugTrackerRuleManager(ctx.getIndex());
 		for (Object o : list) {
-			AlertFilter af = AlertFilter.decode(ctx.getIndex(), o.toString());
-			m.addAlertFilter(af);
+			BugTrackerRule af = BugTrackerRule.decode(ctx.getIndex(), o.toString());
+			m.addBugTrackerRule(af);
 		}
 	}
 
@@ -298,11 +298,11 @@ public class ExtensionBugTracker extends ExtensionAdaptor implements ContextPane
 	 * @param contextId the context id
 	 * @return the context panel
 	 */
-	private ContextAlertFilterPanel getContextPanel(int contextId) {
-		ContextAlertFilterPanel panel = this.alertFilterPanelsMap.get(contextId);
+	private ContextBugTrackerRulePanel getContextPanel(int contextId) {
+		ContextBugTrackerRulePanel panel = this.bugTrackerRulePanelsMap.get(contextId);
 		if (panel == null) {
-			panel = new ContextAlertFilterPanel(this, contextId);
-			this.alertFilterPanelsMap.put(contextId, panel);
+			panel = new ContextBugTrackerRulePanel(this, contextId);
+			this.bugTrackerRulePanelsMap.put(contextId, panel);
 		}
 		return panel;
 	}
@@ -310,13 +310,13 @@ public class ExtensionBugTracker extends ExtensionAdaptor implements ContextPane
 	@Override
 	public void discardContexts() {
 		this.contextManagers.clear();
-		this.alertFilterPanelsMap.clear();
+		this.bugTrackerRulePanelsMap.clear();
 	}
 
 	@Override
 	public void discardContext(Context ctx) {
 		this.contextManagers.remove(ctx.getIndex());
-		this.alertFilterPanelsMap.remove(ctx.getIndex());
+		this.bugTrackerRulePanelsMap.remove(ctx.getIndex());
 	}
 	
 	private ExtensionAlert getExtAlert() {
@@ -400,49 +400,49 @@ public class ExtensionBugTracker extends ExtensionAdaptor implements ContextPane
 		String uri = alert.getUri();
 		log.debug("Alert: " + this.lastAlert + " URL: " + uri);
 		// Loop through rules and apply as necessary..
-		for (ContextAlertFilterManager mgr : this.contextManagers.values()) {
+		for (ContextBugTrackerRuleManager mgr : this.contextManagers.values()) {
 			Context context = Model.getSingleton().getSession().getContext(mgr.getContextId());
 			if (context.isInContext(uri)) {
 				log.debug("Is in context " + context.getIndex() + 
-						" got " + mgr.getAlertFilters().size() + " filters");
+						" got " + mgr.getBugTrackerRules().size() + " bugTrackerRules");
 				// Its in this context
-				for (AlertFilter filter : mgr.getAlertFilters()) {
-					if (! filter.isEnabled()) {
+				for (BugTrackerRule bugTrackerRule : mgr.getBugTrackerRules()) {
+					if (! bugTrackerRule.isEnabled()) {
 						// rule ids dont match
 						log.debug("Filter disabled");
 						continue;
 					}
-					if (filter.getRuleId() != alert.getPluginId()) {
+					if (bugTrackerRule.getRuleId() != alert.getPluginId()) {
 						// rule ids dont match
 						log.debug("Filter didnt match plugin id: " + 
-								filter.getRuleId() + " != " + alert.getPluginId());
+								bugTrackerRule.getRuleId() + " != " + alert.getPluginId());
 						continue;
 					}
-					if (filter.getUrl() != null && filter.getUrl().length() > 0) {
-						if (filter.isRegex()) {
-							Pattern p = Pattern.compile(filter.getUrl());
+					if (bugTrackerRule.getUrl() != null && bugTrackerRule.getUrl().length() > 0) {
+						if (bugTrackerRule.isRegex()) {
+							Pattern p = Pattern.compile(bugTrackerRule.getUrl());
 							if (! p.matcher(uri).matches()) {
 								// URL pattern doesnt match
-								log.debug("Filter didnt match URL regex: " + filter.getUrl() + " url: " + uri);
+								log.debug("Filter didnt match URL regex: " + bugTrackerRule.getUrl() + " url: " + uri);
 								continue;
 							}
-						} else if (!filter.getUrl().equals(uri)) {
+						} else if (!bugTrackerRule.getUrl().equals(uri)) {
 							// URL doesnt match
-							log.debug("Filter didnt match URL: " + filter.getUrl());
+							log.debug("Filter didnt match URL: " + bugTrackerRule.getUrl());
 							continue;
 						}
 					}
-					if (filter.getParameter() != null && filter.getParameter().length() > 0) {
-						if (! filter.getParameter().equals(alert.getParam())) {
+					if (bugTrackerRule.getParameter() != null && bugTrackerRule.getParameter().length() > 0) {
+						if (! bugTrackerRule.getParameter().equals(alert.getParam())) {
 							// Parameter doesnt match
-							log.debug("Filter didnt match parameter: " + filter.getParameter() + 
+							log.debug("Filter didnt match parameter: " + bugTrackerRule.getParameter() + 
 									" != " + alert.getParam());
 							continue;
 						}
 					}
-					if (filter.getNewRisk() > -2) {
-						if (filter.getNewRisk() != alert.getRisk()) {
-							log.debug("Filter didnt match Risk: " + filter.getNewRisk() +
+					if (bugTrackerRule.getNewRisk() > -2) {
+						if (bugTrackerRule.getNewRisk() != alert.getRisk()) {
+							log.debug("Filter didnt match Risk: " + bugTrackerRule.getNewRisk() +
 								    " != " + alert.getRisk());
 							continue;
 						}

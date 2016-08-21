@@ -80,6 +80,7 @@ public class RaiseSemiAutoIssueDialog extends StandardFieldsDialog {
         this.addComboField(FIELD_TRACKER_LIST, trackerNames, value);
         for(BugTracker bugTracker: bugTrackers) {
             bugTracker.setDialog(this);
+            bugTracker.setDetails(alerts);
         }
         this.addFieldListener(FIELD_TRACKER_LIST, new ActionListener() {
             @Override
@@ -94,12 +95,12 @@ public class RaiseSemiAutoIssueDialog extends StandardFieldsDialog {
         List<BugTracker> bugTrackers = extension.getBugTrackers();
         for(BugTracker bugTracker: bugTrackers) {
             if(bugTracker.getName().equals(currentItem)) {
-                bugTracker.setDetails(alerts);
                 this.removeAllFields();
                 System.out.println(bugTracker.getName());
                 addTrackerList(bugTracker.getName());
                 bugTracker.createDialogs();
-                validate();
+                revalidate();
+                repaint();
             }
         }
     }
@@ -110,10 +111,12 @@ public class RaiseSemiAutoIssueDialog extends StandardFieldsDialog {
     }
 
     public void save() {
-    	int bugTrackerCount = bugTrackers.length;
+        String currentItem = this.getStringValue(FIELD_TRACKER_LIST);
         List<BugTracker> bugTrackers = extension.getBugTrackers();
         for(BugTracker bugTracker: bugTrackers) {
-            bugTracker.raise(this);
+            if(bugTracker.getName().equals(currentItem)) {
+                bugTracker.raise(this);
+            }
         }
     }
 

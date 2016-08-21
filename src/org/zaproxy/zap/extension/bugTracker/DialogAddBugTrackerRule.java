@@ -36,15 +36,15 @@ import org.zaproxy.zap.view.AbstractFormDialog;
 import org.zaproxy.zap.view.LayoutHelper;
 
 /**
- * The Dialog for adding and configuring a new {@link AlertFilter}.
+ * The Dialog for adding and configuring a new {@link BugTrackerRule}.
  */
-public class DialogAddAlertFilter extends AbstractFormDialog {
+public class DialogAddBugTrackerRule extends AbstractFormDialog {
 
 	/** The Constant serialVersionUID. */
 	private static final long serialVersionUID = -7210879426146833234L;
 
 	/** The Constant logger. */
-	protected static final Logger log = Logger.getLogger(DialogAddAlertFilter.class);
+	protected static final Logger log = Logger.getLogger(DialogAddBugTrackerRule.class);
 
 	private static final String DIALOG_TITLE = Constant.messages.getString("bugTracker.dialog.add.title");
 	private static final String CONFIRM_BUTTON_LABEL = 
@@ -58,29 +58,29 @@ public class DialogAddAlertFilter extends AbstractFormDialog {
 	private ZapTextField urlTextField;
 	private JCheckBox regexCheckBox;
 	protected Context workingContext;
-	protected AlertFilter alertFilter;
+	protected BugTrackerRule bugTrackerRule;
 
 	/**
-	 * Instantiates a new dialog add alertFilter.
+	 * Instantiates a new dialog add bugTrackerRule.
 	 * 
 	 * @param owner the owner
 	 * @param extension the extension
 	 * @param context the context
 	 */
-	public DialogAddAlertFilter(Dialog owner, ExtensionBugTracker extension) {
+	public DialogAddBugTrackerRule(Dialog owner, ExtensionBugTracker extension) {
 		super(owner, DIALOG_TITLE);
 		//this.extension = extension;
 	}
 
 	/**
-	 * Instantiates a new dialog add alertFilter.
+	 * Instantiates a new dialog add bugTrackerRule.
 	 * 
 	 * @param owner the owner
 	 * @param extension the extension
 	 * @param title the title
 	 * @param context the context
 	 */
-	public DialogAddAlertFilter(Dialog owner, ExtensionBugTracker extension, String title) {
+	public DialogAddBugTrackerRule(Dialog owner, ExtensionBugTracker extension, String title) {
 		super(owner, title);
 		//this.extension = extension;
 	}
@@ -104,7 +104,7 @@ public class DialogAddAlertFilter extends AbstractFormDialog {
 	}
 
 	public void clear() {
-		this.alertFilter = null;
+		this.bugTrackerRule = null;
 		this.workingContext = null;
 	}
 
@@ -117,7 +117,7 @@ public class DialogAddAlertFilter extends AbstractFormDialog {
 	@Override
 	protected void performAction() {
 		String alertName = (String)getAlertCombo().getSelectedItem();
-		this.alertFilter = new AlertFilter(
+		this.bugTrackerRule = new BugTrackerRule(
 				workingContext.getIndex(), 
 				ExtensionBugTracker.getIdForRuleName(alertName),
 				getNewLevel(),
@@ -133,12 +133,12 @@ public class DialogAddAlertFilter extends AbstractFormDialog {
 	}
 
 	/**
-	 * Gets the alertFilter defined in the dialog, if any.
+	 * Gets the bugTrackerRule defined in the dialog, if any.
 	 * 
-	 * @return the alertFilter, if correctly built or null, otherwise
+	 * @return the bugTrackerRule, if correctly built or null, otherwise
 	 */
-	public AlertFilter getAlertFilter() {
-		return alertFilter;
+	public BugTrackerRule getBugTrackerRule() {
+		return bugTrackerRule;
 	}
 
 	@Override
@@ -147,7 +147,7 @@ public class DialogAddAlertFilter extends AbstractFormDialog {
 			fieldsPanel = new JPanel();
 
 			fieldsPanel.setLayout(new GridBagLayout());
-			fieldsPanel.setName("DialogAddAlertFilter");
+			fieldsPanel.setName("DialogAddBugTrackerRule");
 			Insets insets = new Insets(4, 8, 2, 4);
 
 			JLabel alertLabel = new JLabel(
@@ -222,11 +222,11 @@ public class DialogAddAlertFilter extends AbstractFormDialog {
 	protected JComboBox<String> getNewLevelCombo() {
 		if (newLevelCombo == null) {
 			newLevelCombo = new JComboBox<String>();
-			newLevelCombo.addItem(AlertFilter.getNameForRisk(-1));
-			newLevelCombo.addItem(AlertFilter.getNameForRisk(0));
-			newLevelCombo.addItem(AlertFilter.getNameForRisk(1));
-			newLevelCombo.addItem(AlertFilter.getNameForRisk(2));
-			newLevelCombo.addItem(AlertFilter.getNameForRisk(3));
+			newLevelCombo.addItem(BugTrackerRule.getNameForRisk(-1));
+			newLevelCombo.addItem(BugTrackerRule.getNameForRisk(0));
+			newLevelCombo.addItem(BugTrackerRule.getNameForRisk(1));
+			newLevelCombo.addItem(BugTrackerRule.getNameForRisk(2));
+			newLevelCombo.addItem(BugTrackerRule.getNameForRisk(3));
 		}
 		return newLevelCombo;
 	}
@@ -235,7 +235,7 @@ public class DialogAddAlertFilter extends AbstractFormDialog {
 		String level = (String)getNewLevelCombo().getSelectedItem();
 		
 		for (int i=-1; i < 4; i++) {
-			if (AlertFilter.getNameForRisk(i).equals(level)) {
+			if (BugTrackerRule.getNameForRisk(i).equals(level)) {
 				return i;
 			}
 		}
