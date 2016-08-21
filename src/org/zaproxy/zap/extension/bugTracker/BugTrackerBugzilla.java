@@ -94,17 +94,23 @@ public class BugTrackerBugzilla extends BugTracker {
     private String FIELD_SUMMARY = "bugTracker.trackers.bugzilla.issue.summary";
     private String FIELD_USERNAME = "bugTracker.trackers.bugzilla.issue.username";
     private String FIELD_PASSWORD = "bugTracker.trackers.bugzilla.issue.password";
+    private String FIELD_BUGZILLA_CONFIG = "bugTracker.trackers.bugzilla.issue.config";
     private String summaryIssue = null;
     private String descriptionIssue = null;
     private JPanel configTable = null;
     private JPanel bugzillaPanel = null;
     private BugTrackerBugzillaTableModel bugzillaModel = null;
+    private RaiseSemiAutoIssueDialog dialog = null;
 
     private static final Logger log = Logger.getLogger(BugTrackerBugzilla.class);
 
-	public BugTrackerBugzilla(Set<Alert> alerts) {
+    public void setDetails(Set<Alert> alerts) {
         setSummary(alerts);
         setDesc(alerts);
+    } 
+
+    public void setDialog(RaiseSemiAutoIssueDialog dialog) {
+        this.dialog = dialog;
     }
 
     public BugTrackerBugzilla() {
@@ -115,25 +121,29 @@ public class BugTrackerBugzilla extends BugTracker {
         bugzillaPanel = new BugTrackerBugzillaMultipleOptionsPanel(getBugzillaModel());
     }
 
-    // public JPanel getCredentialsTable() {
-    //     return credentialTable;
-    // }
-
     public JPanel getConfigPanel() {
         return bugzillaPanel;
     }
 
-    public void createDialogs(RaiseSemiAutoIssueDialog dialog, int index) {
-		dialog.addTextField(index, FIELD_URL, "");
-		dialog.addTextField(index, FIELD_PRODUCT, "");
-		dialog.addTextField(index, FIELD_COMPONENT, "");
-		dialog.addTextField(index, FIELD_VERSION, "");
-		dialog.addTextField(index, FIELD_OS, "");
-		dialog.addTextField(index, FIELD_PLATFORM, "");
-		dialog.addTextField(index, FIELD_DESCRIPTION, getDesc());
-		dialog.addTextField(index, FIELD_SUMMARY, getSummary());
-		dialog.addTextField(index, FIELD_USERNAME, "");
-		dialog.addTextField(index, FIELD_PASSWORD, "");
+    public void createDialogs() {
+        dialog.setXWeights(0.1D, 0.9D);
+        List<BugTrackerBugzillaConfigParams> configs = getOptions().getConfigs();
+        List<String> configNames = new ArrayList<String>();
+        for(BugTrackerBugzillaConfigParams config: configs) {
+            System.out.println(config.getName()+", "+config.getPassword()+", "+config.getBugzillaUrl());
+            configNames.add(config.getName());
+        }
+        dialog.addComboField(FIELD_BUGZILLA_CONFIG, configNames, "");
+        dialog.addTextField(FIELD_URL, "");
+		dialog.addTextField(FIELD_PRODUCT, "");
+		dialog.addTextField(FIELD_COMPONENT, "");
+		dialog.addTextField(FIELD_VERSION, "");
+		dialog.addTextField(FIELD_OS, "");
+		dialog.addTextField(FIELD_PLATFORM, "");
+		dialog.addTextField(FIELD_DESCRIPTION, getDesc());
+		dialog.addTextField(FIELD_SUMMARY, getSummary());
+		dialog.addTextField(FIELD_USERNAME, "");
+		dialog.addTextField(FIELD_PASSWORD, "");
 	}
 
 	public void setSummary(Set<Alert> alerts) {
@@ -233,6 +243,26 @@ public class BugTrackerBugzilla extends BugTracker {
 		}
 	}
 
+    public void raise() {
+        String url, summary, description, product, component, version, os, platform, username, password;
+        url = "https://landfill.bugzilla.org/bugzilla-5.0-branch/";
+        summary = getSummary();
+        description = getDesc();
+        product = "WorldControl";
+        component = "WeatherControl";
+        version = "1.0";
+        os = "Windows XP";
+        platform = "PC";
+        username = "sanchitlucknow@gmail.com";
+        password = "";
+        try {
+            raiseOnTracker(url, summary, description, product, component, version, os, platform, username, password);
+            System.out.println("Raised");
+        } catch(IOException e) {
+            log.debug(e.toString());
+        }
+    }
+
 	public void raise(RaiseSemiAutoIssueDialog dialog) {
         String url, summary, description, product, component, version, os, platform, username, password;
         url = dialog.getStringValue(FIELD_URL);
@@ -273,7 +303,16 @@ public class BugTrackerBugzilla extends BugTracker {
         return bugzillaModel;
     }
 
-    private static class BugTrackerBugzillaMultipleOptionsPanel extends AbstractMultipleOptionsTablePanel<BugTrackerBugzillaParams> {
+    private BugTrackerBugzillaParam options;
+
+    public BugTrackerBugzillaParam getOptions() {
+        if (options == null) {
+            options = new BugTrackerBugzillaParam();
+        }
+        return options;
+    }
+
+    public static class BugTrackerBugzillaMultipleOptionsPanel extends AbstractMultipleOptionsTablePanel<BugTrackerBugzillaConfigParams> {
         
         private static final long serialVersionUID = -115340627058929308L;
         
@@ -300,7 +339,7 @@ public class BugTrackerBugzilla extends BugTracker {
         }
 
         @Override
-        public BugTrackerBugzillaParams showAddDialogue() {
+        public BugTrackerBugzillaConfigParams showAddDialogue() {
             if (addDialog == null) {
                 addDialog = new DialogAddBugzillaConfig(View.getSingleton().getOptionsDialog(null));
                 addDialog.pack();
@@ -308,14 +347,14 @@ public class BugTrackerBugzilla extends BugTracker {
             addDialog.setConfigs(model.getElements());
             addDialog.setVisible(true);
             
-            BugTrackerBugzillaParams config = addDialog.getConfig();
+            BugTrackerBugzillaConfigParams config = addDialog.getConfig();
             addDialog.clear();
             
             return config;
         }
         
         @Override
-        public BugTrackerBugzillaParams showModifyDialogue(BugTrackerBugzillaParams e) {
+        public BugTrackerBugzillaConfigParams showModifyDialogue(BugTrackerBugzillaConfigParams e) {
             if (modifyDialog == null) {
                 modifyDialog = new DialogModifyBugzillaConfig(View.getSingleton().getOptionsDialog(null));
                 modifyDialog.pack();
@@ -324,7 +363,7 @@ public class BugTrackerBugzilla extends BugTracker {
             modifyDialog.setConfig(e);
             modifyDialog.setVisible(true);
             
-            BugTrackerBugzillaParams config = modifyDialog.getConfig();
+            BugTrackerBugzillaConfigParams config = modifyDialog.getConfig();
             modifyDialog.clear();
             
             if (!config.equals(e)) {
@@ -335,7 +374,7 @@ public class BugTrackerBugzilla extends BugTracker {
         }
         
         @Override
-        public boolean showRemoveDialogue(BugTrackerBugzillaParams e) {
+        public boolean showRemoveDialogue(BugTrackerBugzillaConfigParams e) {
             JCheckBox removeWithoutConfirmationCheckBox = new JCheckBox(REMOVE_DIALOG_CHECKBOX_LABEL);
             Object[] messages = {REMOVE_DIALOG_TEXT, " ", removeWithoutConfirmationCheckBox};
             int option = JOptionPane.showOptionDialog(View.getSingleton().getMainFrame(), messages, REMOVE_DIALOG_TITLE,
@@ -350,5 +389,14 @@ public class BugTrackerBugzilla extends BugTracker {
             
             return false;
         }
+    }
+
+    private BugTrackerBugzillaOptionsPanel optionsPanel;
+
+    public BugTrackerBugzillaOptionsPanel getOptionsPanel() {
+        if (optionsPanel == null) {
+            optionsPanel = new BugTrackerBugzillaOptionsPanel();
+        }
+        return optionsPanel;
     }
 }

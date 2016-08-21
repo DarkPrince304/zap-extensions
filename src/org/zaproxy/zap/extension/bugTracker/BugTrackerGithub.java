@@ -31,6 +31,7 @@ import org.parosproxy.paros.control.Control;
 import org.parosproxy.paros.core.scanner.Alert;
 import java.io.IOException;
 import java.util.Set;
+import java.util.HashSet;
 
 import javax.swing.JPanel;
 import javax.swing.JLabel;
@@ -89,52 +90,84 @@ public class BugTrackerGithub extends BugTracker {
 	private String FIELD_TITLE = "bugTracker.trackers.github.issue.title";
 	private String FIELD_BODY = "bugTracker.trackers.github.issue.body";
 	private String FIELD_LABELS = "bugTracker.trackers.github.issue.labels";
-	private String FIELD_ASSIGNEE = "bugTracker.trackers.github.issue.assignee";
+    private String FIELD_ASSIGNEE_MANUAL = "bugTracker.trackers.github.issue.assignee.manual";
+    private String FIELD_ASSIGNEE_LIST = "bugTracker.trackers.github.issue.assignee.list";
 	private String FIELD_USERNAME = "bugTracker.trackers.github.issue.username";
 	private String FIELD_PASSWORD = "bugTracker.trackers.github.issue.password";
+    private String FIELD_GITHUB_CONFIG = "bugTracker.trackers.github.issue.config";
     private String titleIssue = null;
     private String bodyIssue = null;
     private String labelsIssue = null;
     private JPanel configTable = null;
     private JPanel githubPanel = null;
     private BugTrackerGithubTableModel githubModel = null;
+    private RaiseSemiAutoIssueDialog dialog = null;
 
     private static final Logger log = Logger.getLogger(BugTrackerGithub.class);   
 
-    public BugTrackerGithub (Set<Alert> alerts) {
+    public BugTrackerGithub() {
+        initializeConfigTable();
+    }
+
+    public void setDetails(Set<Alert> alerts) {
         setTitle(alerts);
         setBody(alerts);
         setLabels(alerts);
     }
 
-    public BugTrackerGithub() {
-        initializeConfigTable();
+    public void setDialog(RaiseSemiAutoIssueDialog dialog) {
+        this.dialog = dialog;
     }
 
     public void initializeConfigTable() {
         githubPanel = new BugTrackerGithubMultipleOptionsPanel(getGithubModel());
     }
 
-    // public JPanel getCredentialsTable() {
-    //     return credentialTable;
-    // }
-
     public JPanel getConfigPanel() {
         return githubPanel;
     }
 
-    public void createDialogs(RaiseSemiAutoIssueDialog dialog, int index) {
-        List<BugTrackerGithubConfigParams> configs = options.getConfigs();
+    public void createDialogs() {
+        List<BugTrackerGithubConfigParams> configs = getOptions().getConfigs();
+        Set<String> collaborators = new HashSet<String>();
+        List<String> configNames = new ArrayList<String>();
         for(BugTrackerGithubConfigParams config: configs) {
-            System.out.println(config.getName()+", "+config.getPassword()+", "+config.getRepoUrl());
+            configNames.add(config.getName());
         }
-        dialog.addTextField(index, FIELD_REPO, "");
-        dialog.addTextField(index, FIELD_TITLE, getTitle());
-        dialog.addMultilineField(index, FIELD_BODY, getBody());
-        dialog.addTextField(index, FIELD_LABELS, getLabels());
-        dialog.addTextField(index, FIELD_ASSIGNEE, "");
-        dialog.addTextField(index, FIELD_USERNAME, "");
-        dialog.addTextField(index, FIELD_PASSWORD, "");        
+        dialog.setXWeights(0.1D, 0.9D);
+        dialog.addComboField(FIELD_GITHUB_CONFIG, configNames, "");
+        dialog.addTextField(FIELD_REPO, "");
+        dialog.addTextField(FIELD_TITLE, getTitle());
+        dialog.addMultilineField(FIELD_BODY, getBody());
+        dialog.addTextField(FIELD_LABELS, getLabels());
+        dialog.addTextField(FIELD_ASSIGNEE_MANUAL, "");
+        dialog.addComboField(FIELD_ASSIGNEE_LIST, new ArrayList<String>(), "");
+        dialog.addTextField(FIELD_USERNAME, "");
+        dialog.addTextField(FIELD_PASSWORD, "");
+        updateAssigneeList();        
+        dialog.addFieldListener(FIELD_GITHUB_CONFIG, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                updateAssigneeList();
+            }
+        });
+    }
+
+    public void updateAssigneeList() {
+        try {
+            String currentItem = dialog.getStringValue(FIELD_GITHUB_CONFIG);
+            Set<String> collaborators = new HashSet<String>();
+            List<BugTrackerGithubConfigParams> configs = getOptions().getConfigs();
+            for(BugTrackerGithubConfigParams config: configs) {
+                if(config.getName().equals(currentItem)) {
+                    collaborators = getCollaborators(config.getName(), config.getPassword(), config.getRepoUrl());
+                    List<String> assignees = new ArrayList<String>(collaborators);
+                    dialog.setComboFields(FIELD_ASSIGNEE_LIST, assignees, "");
+                }
+            }
+        } catch(IOException e) {
+            log.debug(e.toString());
+        }
     }
 
     public void setTitle(Set<Alert> alerts) {
@@ -217,6 +250,19 @@ public class BugTrackerGithub extends BugTracker {
         return this.labelsIssue;
     }
 
+    public Set<String> getCollaborators(String username, String password, String repo) throws IOException{
+        GitHub github = GitHub.connectUsingPassword(username, password);
+        Set<String> collaborators = null;
+        try {
+            GHRepository repository = github.getRepository(repo);
+            collaborators = repository.getCollaboratorNames();
+        } catch(ArrayIndexOutOfBoundsException e) {
+            log.debug(Constant.messages.getString("bugTracker.popup.issue.msg.repo"));
+        } catch(HttpException e) {
+            log.debug(e.toString());
+        }
+        return collaborators;
+    }
 
     public void raiseOnTracker(String repo, String title, String body, String labels, String assignee, String username, String password) throws IOException {
         GitHub github = GitHub.connectUsingPassword(username, password);
@@ -250,7 +296,7 @@ public class BugTrackerGithub extends BugTracker {
         labels = getLabels();
         assignee = "darkprince304";
         username = "darkprince304";
-        password = "mishlet1304";
+        password = "";
         System.out.println(repo+ " "+ title + " "+ body + " " + labels + " " + assignee + " " + username + " " + password + " ");
         try {
             raiseOnTracker(repo, title, body, labels, assignee, username, password);
@@ -266,7 +312,7 @@ public class BugTrackerGithub extends BugTracker {
         title = dialog.getStringValue(FIELD_TITLE);
         body = dialog.getStringValue(FIELD_BODY);
         labels =dialog.getStringValue(FIELD_LABELS);
-        assignee = dialog.getStringValue(FIELD_ASSIGNEE);
+        assignee = dialog.getStringValue(FIELD_ASSIGNEE_MANUAL);
         username = dialog.getStringValue(FIELD_USERNAME);
         password = dialog.getStringValue(FIELD_PASSWORD);
         System.out.println(repo+ " "+ title + " "+ body + " " + labels + " " + assignee + " " + username + " " + password + " ");

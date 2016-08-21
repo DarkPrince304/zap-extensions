@@ -21,24 +21,24 @@ package org.zaproxy.zap.extension.bugTracker;
 
 import org.zaproxy.zap.utils.Enableable;
 
-class BugTrackerBugzillaParams extends Enableable {
+class BugTrackerBugzillaConfigParams extends Enableable {
 
     private String username;
     private String password;
-    private String repoUrl;
+    private String bugzillaUrl;
 
-    public BugTrackerBugzillaParams() {
+    public BugTrackerBugzillaConfigParams() {
         this("", "", "");
     }
 
-    public BugTrackerBugzillaParams(String username, String password, String repoUrl) {
+    public BugTrackerBugzillaConfigParams(String username, String password, String bugzillaUrl) {
         this.username = username;
         this.password = password;
-        this.repoUrl = repoUrl;
+        this.bugzillaUrl = bugzillaUrl;
     }
 
-    public BugTrackerBugzillaParams(BugTrackerBugzillaParams config) {
-        this(config.username, config.password, config.repoUrl);
+    public BugTrackerBugzillaConfigParams(BugTrackerBugzillaConfigParams config) {
+        this(config.username, config.password, config.bugzillaUrl);
     }
 
     public String getName() {
@@ -49,8 +49,8 @@ class BugTrackerBugzillaParams extends Enableable {
         return password;
     }
 
-    public String getRepoUrl() {
-        return repoUrl;
+    public String getBugzillaUrl() {
+        return bugzillaUrl;
     }
 
     public void setName(String username) {
@@ -61,8 +61,8 @@ class BugTrackerBugzillaParams extends Enableable {
         this.password = password;
     }
 
-    public void setRepoUrl(String repoUrl) {
-        this.repoUrl = repoUrl;
+    public void setBugzillaUrl(String bugzillaUrl) {
+        this.bugzillaUrl = bugzillaUrl;
     }
 
     @Override
@@ -81,7 +81,7 @@ class BugTrackerBugzillaParams extends Enableable {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        BugTrackerBugzillaParams other = (BugTrackerBugzillaParams) obj;
+        BugTrackerBugzillaConfigParams other = (BugTrackerBugzillaConfigParams) obj;
         if (username == null) {
             if (other.username != null) {
                 return false;

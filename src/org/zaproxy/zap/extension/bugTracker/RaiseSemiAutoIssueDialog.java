@@ -27,7 +27,11 @@ import org.zaproxy.zap.utils.ZapTextField;
  
 import org.zaproxy.zap.view.StandardFieldsDialog;
 import java.awt.Dimension;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 import java.util.Set;
+import java.util.List;
+import java.util.ArrayList;
 
 public class RaiseSemiAutoIssueDialog extends StandardFieldsDialog {
 
@@ -41,13 +45,10 @@ public class RaiseSemiAutoIssueDialog extends StandardFieldsDialog {
     private BugTrackerGithub githubIssue;
     private BugTrackerBugzilla bugzillaIssue;
     private Set<Alert> alerts = null;
+    private String FIELD_TRACKER_LIST = "bugTracker.trackers.list";
 
     public RaiseSemiAutoIssueDialog(ExtensionBugTracker ext, Frame owner, Dimension dim){
-        super(owner, "bugTracker.dialog.semi.title", dim,
-                new String[] {
-                                "bugTracker.trackers.github.tab",
-                                "bugTracker.trackers.bugzilla.tab",
-                            });
+        super(owner, "bugTracker.dialog.semi.title", dim);
         this.extension = ext;
         this.alerts = ext.alerts;
         // System.out.println(this.alerts[0].getName());
@@ -65,19 +66,42 @@ public class RaiseSemiAutoIssueDialog extends StandardFieldsDialog {
 	private void initialize() {
 		this.removeAllFields();
         this.setTitle(Constant.messages.getString("bugTracker.popup.issue.semi"));
-        int bugTrackerCount = bugTrackers.length;
-        for(int i = 0; i < bugTrackerCount; i++ ) {
-        	if(bugTrackers[i].equals("github")){
-        		githubIssue = new BugTrackerGithub(alerts);
-                githubIssue.createDialogs(this, i);
-
-        	} else if(bugTrackers[i].equals("bugzilla")){
-        		bugzillaIssue = new BugTrackerBugzilla(alerts);
-                bugzillaIssue.createDialogs(this, i);
-        	}
-        	// System.out.println(githubIssue);
-        }
+        addTrackerList(extension.getBugTrackers().get(0).getName());
+        updateTrackerFields();
+        this.addFieldListener(FIELD_TRACKER_LIST, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                updateTrackerFields();
+            }
+        });
 	}
+
+    public void addTrackerList(String value) {
+        List<BugTracker> bugTrackers = extension.getBugTrackers();
+        List<String> trackerNames = new ArrayList<String>();
+        for(BugTracker bugTracker: bugTrackers) {
+            trackerNames.add(bugTracker.getName());
+        }
+        this.addComboField(FIELD_TRACKER_LIST, trackerNames, value);
+        for(BugTracker bugTracker: bugTrackers) {
+            bugTracker.setDialog(this);
+        }
+    }
+
+    public void updateTrackerFields() {
+        String currentItem = this.getStringValue(FIELD_TRACKER_LIST);
+        List<BugTracker> bugTrackers = extension.getBugTrackers();
+        for(BugTracker bugTracker: bugTrackers) {
+            if(bugTracker.getName().equals(currentItem)) {
+                bugTracker.setDetails(alerts);
+                this.removeAllFields();
+                System.out.println(bugTracker.getName());
+                addTrackerList(bugTracker.getName());
+                bugTracker.createDialogs();
+                validate();
+            }
+        }
+    }
 
 	@Override
     public String validateFields() {
@@ -86,15 +110,9 @@ public class RaiseSemiAutoIssueDialog extends StandardFieldsDialog {
 
     public void save() {
     	int bugTrackerCount = bugTrackers.length;
-        for(int i = 0; i < bugTrackerCount; i++ ) {
-        	if(bugTrackers[i].equals("github")){
-        		githubIssue.raise(this);
-
-        	} else if(bugTrackers[i].equals("bugzilla")){
-        		// bugzillaIssue = new BugTrackerBugzillaIssue(this, i);
-                bugzillaIssue.raise(this);
-        	}
-        	// System.out.println(githubIssue);
+        List<BugTracker> bugTrackers = extension.getBugTrackers();
+        for(BugTracker bugTracker: bugTrackers) {
+            bugTracker.raise(this);
         }
     }
 

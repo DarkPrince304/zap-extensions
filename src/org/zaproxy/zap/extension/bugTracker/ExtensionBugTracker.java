@@ -197,8 +197,8 @@ public class ExtensionBugTracker extends ExtensionAdaptor implements ContextPane
 
         BugTrackerGithub githubTracker = new BugTrackerGithub();
         extensionHook.addOptionsParamSet(githubTracker.getOptions());
-        // BugTrackerBugzilla bugzillaTracker = new BugTrackerBugzilla();
-        // extensionHook.addOptionsParamSet(bugzillaTracker.getOptions());
+        BugTrackerBugzilla bugzillaTracker = new BugTrackerBugzilla();
+        extensionHook.addOptionsParamSet(bugzillaTracker.getOptions());
 
 	    extensionHook.addSessionListener(this);
 	    
@@ -208,35 +208,13 @@ public class ExtensionBugTracker extends ExtensionAdaptor implements ContextPane
 		if (getView() != null) {
 			// Factory for generating Session Context alertFilters panels
 			addBugTracker(githubTracker);
-			addBugTracker(new BugTrackerBugzilla());
+			addBugTracker(bugzillaTracker);
 			for(BugTracker bug: bugTrackers) {
 				System.out.println(bug.getName());
 			}
 			getView().addContextPanelFactory(this);
-	        // extensionHook.getHookView().addOptionPanel(getOptionsBugTrackerPanel());
 			View.getSingleton().getOptionsDialog("").addParamPanel(new String[]{"Bug Trackers"}, githubTracker.getOptionsPanel(), true);
-			View.getSingleton().getOptionsDialog("").addParamPanel(new String[]{"Bug Trackers"}, "Bugzilla", new AbstractParamPanel() {
-               
-				@Override
-				public void validateParam(Object arg0) throws Exception {
-
-				}
-
-				@Override
-				public void saveParam(Object arg0) throws Exception {
-
-				}
-
-				@Override
-				public void initParam(Object arg0) {
-
-				}
-
-				@Override
-				public String getHelpIndex() {
-				    return null;
-				}
-            }, true);
+			View.getSingleton().getOptionsDialog("").addParamPanel(new String[]{"Bug Trackers"}, bugzillaTracker.getOptionsPanel(), true);
 	    	extensionHook.getHookMenu().addPopupMenuItem(getPopupMsgRaiseSemiAuto());
 		}
 
@@ -471,8 +449,8 @@ public class ExtensionBugTracker extends ExtensionAdaptor implements ContextPane
 					}
 					this.alerts = new HashSet<>();
 					this.alerts.add(alert);
-					BugTrackerGithub githubIssue = new BugTrackerGithub(this.alerts);
-					githubIssue.raise();
+					// BugTrackerGithub githubIssue = new BugTrackerGithub();
+					// githubIssue.raise();
 					break;
 				}
 			}
@@ -520,13 +498,6 @@ public class ExtensionBugTracker extends ExtensionAdaptor implements ContextPane
 	public void unload() {
 		super.unload();
 	}
-
-	// private OptionsBugTrackerPanel getOptionsBugTrackerPanel() {
-	// 	if (optionsBugTrackerPanel == null) {
-	// 		optionsBugTrackerPanel = new OptionsBugTrackerPanel(this);
-	// 	}
-	// 	return optionsBugTrackerPanel;
-	// }
 
 	private PopupSemiAutoIssue getPopupMsgRaiseSemiAuto() {
 		if (popupMsgRaiseSemiAuto  == null) {

@@ -24,36 +24,36 @@ import java.util.List;
 import org.parosproxy.paros.Constant;
 import org.zaproxy.zap.view.AbstractMultipleOptionsTableModel;
 
-public class BugTrackerBugzillaTableModel extends AbstractMultipleOptionsTableModel<BugTrackerBugzillaParams> {
+public class BugTrackerBugzillaTableModel extends AbstractMultipleOptionsTableModel<BugTrackerBugzillaConfigParams> {
 
 	private static final long serialVersionUID = 1L;
 
     private static final String[] COLUMN_NAMES = {
             Constant.messages.getString("bugTracker.trackers.bugzilla.table.header.username"),
             Constant.messages.getString("bugTracker.trackers.bugzilla.table.header.password"),
-            Constant.messages.getString("bugTracker.trackers.bugzilla.table.header.repoUrl")};
+            Constant.messages.getString("bugTracker.trackers.bugzilla.table.header.bugzillaUrl")};
     
 	private static final int COLUMN_COUNT = COLUMN_NAMES.length;
 	
-    private List<BugTrackerBugzillaParams> configs = new ArrayList<>(0);
+    private List<BugTrackerBugzillaConfigParams> configs = new ArrayList<>(0);
     
     public BugTrackerBugzillaTableModel() {
         super();
     }
     
     @Override
-    public List<BugTrackerBugzillaParams> getElements() {
+    public List<BugTrackerBugzillaConfigParams> getElements() {
         return configs;
     }
 
     /**
      * @param configs The configs to set.
      */
-    public void setConfigs(List<BugTrackerBugzillaParams> configs) {
+    public void setConfigs(List<BugTrackerBugzillaConfigParams> configs) {
 		this.configs = new ArrayList<>(configs.size());
 		
-		for (BugTrackerBugzillaParams config : configs) {
-			this.configs.add(new BugTrackerBugzillaParams(config));
+		for (BugTrackerBugzillaConfigParams config : configs) {
+			this.configs.add(new BugTrackerBugzillaConfigParams(config));
 		}
     	
   	  	fireTableDataChanged();
@@ -92,7 +92,7 @@ public class BugTrackerBugzillaTableModel extends AbstractMultipleOptionsTableMo
         case 1:
             return getElement(rowIndex).getPassword().replaceAll("(?s).", "*");
         case 2:
-            return getElement(rowIndex).getRepoUrl();
+            return getElement(rowIndex).getBugzillaUrl();
         }
         return null;
     }

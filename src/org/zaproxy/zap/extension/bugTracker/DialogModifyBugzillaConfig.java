@@ -40,7 +40,7 @@ class DialogModifyBugzillaConfig extends DialogAddBugzillaConfig {
         return CONFIRM_BUTTON_LABEL;
     }
 
-    public void setConfig(BugTrackerBugzillaParams config) {
+    public void setConfig(BugTrackerBugzillaConfigParams config) {
         this.config = config;
     }
     
@@ -58,8 +58,8 @@ class DialogModifyBugzillaConfig extends DialogAddBugzillaConfig {
         getNameTextField().discardAllEdits();
         getPasswordTextField().setText(config.getName());
         getPasswordTextField().discardAllEdits();
-        getRepoUrlTextField().setText(config.getName());
-        getRepoUrlTextField().discardAllEdits();
+        getBugzillaUrlTextField().setText(config.getName());
+        getBugzillaUrlTextField().discardAllEdits();
     }
 
 }

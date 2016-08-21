@@ -44,18 +44,18 @@ class DialogAddBugzillaConfig extends AbstractFormDialog {
     
     private static final String NAME_FIELD_LABEL = Constant.messages.getString("bugTracker.trackers.bugzilla.dialog.config.field.label.name");
     private static final String PASSWORD_FIELD_LABEL = Constant.messages.getString("bugTracker.trackers.bugzilla.dialog.config.field.label.password");
-    private static final String REPO_URL_FIELD_LABEL = Constant.messages.getString("bugTracker.trackers.bugzilla.dialog.config.field.label.repoUrl");
+    private static final String BUGZILLA_URL_FIELD_LABEL = Constant.messages.getString("bugTracker.trackers.bugzilla.dialog.config.field.label.bugzillaUrl");
     
     private static final String TITLE_NAME_REPEATED_DIALOG = Constant.messages.getString("bugTracker.trackers.bugzilla.dialog.config.warning.name.repeated.title");
     private static final String TEXT_NAME_REPEATED_DIALOG = Constant.messages.getString("bugTracker.trackers.bugzilla.dialog.config.warning.name.repeated.text");
     
     private ZapTextField nameTextField;
     private ZapTextField passwordTextField;
-    private ZapTextField repoUrlTextField;
+    private ZapTextField bugzillaUrlTextField;
     private JCheckBox enabledCheckBox;
     
-    protected BugTrackerBugzillaParams config;
-    private List<BugTrackerBugzillaParams> configs;
+    protected BugTrackerBugzillaConfigParams config;
+    private List<BugTrackerBugzillaConfigParams> configs;
     
     public DialogAddBugzillaConfig(Dialog owner) {
         super(owner, DIALOG_TITLE);
@@ -76,17 +76,17 @@ class DialogAddBugzillaConfig extends AbstractFormDialog {
         
         JLabel nameLabel = new JLabel(NAME_FIELD_LABEL);
         JLabel passwordLabel = new JLabel(PASSWORD_FIELD_LABEL);
-        JLabel repoUrlLabel = new JLabel(REPO_URL_FIELD_LABEL);
+        JLabel bugzillaUrlLabel = new JLabel(BUGZILLA_URL_FIELD_LABEL);
         
         layout.setHorizontalGroup(layout.createSequentialGroup()
             .addGroup(layout.createParallelGroup(GroupLayout.Alignment.TRAILING)
                 .addComponent(nameLabel)
                 .addComponent(passwordLabel)
-                .addComponent(repoUrlLabel))
+                .addComponent(bugzillaUrlLabel))
             .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
                 .addComponent(getNameTextField())
                 .addComponent(getPasswordTextField())
-                .addComponent(getRepoUrlTextField()))
+                .addComponent(getBugzillaUrlTextField()))
         );
         
         layout.setVerticalGroup(layout.createSequentialGroup()
@@ -97,8 +97,8 @@ class DialogAddBugzillaConfig extends AbstractFormDialog {
                 .addComponent(passwordLabel)
                 .addComponent(getPasswordTextField()))
             .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-                .addComponent(repoUrlLabel)
-                .addComponent(getRepoUrlTextField()))
+                .addComponent(bugzillaUrlLabel)
+                .addComponent(getBugzillaUrlTextField()))
         );
         
         return fieldsPanel;
@@ -113,7 +113,7 @@ class DialogAddBugzillaConfig extends AbstractFormDialog {
     protected void init() {
         getNameTextField().setText("");
         getPasswordTextField().setText("");
-        getRepoUrlTextField().setText("");
+        getBugzillaUrlTextField().setText("");
         getEnabledCheckBox().setSelected(true);
         config = null;
     }
@@ -121,7 +121,7 @@ class DialogAddBugzillaConfig extends AbstractFormDialog {
     @Override
     protected boolean validateFields() {
         String configName = getNameTextField().getText();
-        for (BugTrackerBugzillaParams t : configs) {
+        for (BugTrackerBugzillaConfigParams t : configs) {
             if (configName.equalsIgnoreCase(t.getName())) {
                 JOptionPane.showMessageDialog(this, TEXT_NAME_REPEATED_DIALOG,
                         TITLE_NAME_REPEATED_DIALOG,
@@ -136,7 +136,7 @@ class DialogAddBugzillaConfig extends AbstractFormDialog {
     
     @Override
     protected void performAction() {
-        config = new BugTrackerBugzillaParams(getNameTextField().getText(), getPasswordTextField().getText(), getRepoUrlTextField().getText());
+        config = new BugTrackerBugzillaConfigParams(getNameTextField().getText(), getPasswordTextField().getText(), getBugzillaUrlTextField().getText());
     }
     
     @Override
@@ -145,11 +145,11 @@ class DialogAddBugzillaConfig extends AbstractFormDialog {
         getNameTextField().discardAllEdits();
         getPasswordTextField().setText("");
         getPasswordTextField().discardAllEdits();
-        getRepoUrlTextField().setText("");
-        getRepoUrlTextField().discardAllEdits();
+        getBugzillaUrlTextField().setText("");
+        getBugzillaUrlTextField().discardAllEdits();
     }
 
-    public BugTrackerBugzillaParams getConfig() {
+    public BugTrackerBugzillaConfigParams getConfig() {
         return config;
     }
     
@@ -211,10 +211,10 @@ class DialogAddBugzillaConfig extends AbstractFormDialog {
         return passwordTextField;
     }
         
-    protected ZapTextField getRepoUrlTextField() {
-        if (repoUrlTextField == null) {
-            repoUrlTextField = new ZapTextField(50);
-            repoUrlTextField.getDocument().addDocumentListener(new DocumentListener() {
+    protected ZapTextField getBugzillaUrlTextField() {
+        if (bugzillaUrlTextField == null) {
+            bugzillaUrlTextField = new ZapTextField(50);
+            bugzillaUrlTextField.getDocument().addDocumentListener(new DocumentListener() {
                 
                 @Override
                 public void removeUpdate(DocumentEvent e) {
@@ -232,12 +232,12 @@ class DialogAddBugzillaConfig extends AbstractFormDialog {
                 }
                 
                 private void checkAndEnableConfirmButton() {
-                    setConfirmButtonEnabled(getRepoUrlTextField().getDocument().getLength() > 0);
+                    setConfirmButtonEnabled(getBugzillaUrlTextField().getDocument().getLength() > 0);
                 }
             });
         }
         
-        return repoUrlTextField;
+        return bugzillaUrlTextField;
     }
     
     protected JCheckBox getEnabledCheckBox() {
@@ -248,7 +248,7 @@ class DialogAddBugzillaConfig extends AbstractFormDialog {
         return enabledCheckBox;
     }
 
-    public void setConfigs(List<BugTrackerBugzillaParams> configs) {
+    public void setConfigs(List<BugTrackerBugzillaConfigParams> configs) {
         this.configs = configs;
     }
 
