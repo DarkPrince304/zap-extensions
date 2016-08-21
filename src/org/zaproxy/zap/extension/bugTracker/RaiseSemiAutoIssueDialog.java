@@ -68,12 +68,7 @@ public class RaiseSemiAutoIssueDialog extends StandardFieldsDialog {
         this.setTitle(Constant.messages.getString("bugTracker.popup.issue.semi"));
         addTrackerList(extension.getBugTrackers().get(0).getName());
         updateTrackerFields();
-        this.addFieldListener(FIELD_TRACKER_LIST, new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                updateTrackerFields();
-            }
-        });
+        
 	}
 
     public void addTrackerList(String value) {
@@ -86,6 +81,12 @@ public class RaiseSemiAutoIssueDialog extends StandardFieldsDialog {
         for(BugTracker bugTracker: bugTrackers) {
             bugTracker.setDialog(this);
         }
+        this.addFieldListener(FIELD_TRACKER_LIST, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                updateTrackerFields();
+            }
+        });
     }
 
     public void updateTrackerFields() {
