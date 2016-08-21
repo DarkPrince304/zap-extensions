@@ -120,7 +120,7 @@ public class ExtensionBugTracker extends ExtensionAdaptor implements ContextPane
 	private static Map<Integer, String> idToName = new HashMap<Integer, String>();
 	private static List<String> allRuleNames;
 	private static ExtensionActiveScan extAscan;
-	private OptionsBugTrackerPanel optionsBugTrackerPanel = null;
+	// private OptionsBugTrackerPanel optionsBugTrackerPanel = null;
 	
     private static final Logger log = Logger.getLogger(ExtensionBugTracker.class);
 
@@ -213,7 +213,7 @@ public class ExtensionBugTracker extends ExtensionAdaptor implements ContextPane
 				System.out.println(bug.getName());
 			}
 			getView().addContextPanelFactory(this);
-	        extensionHook.getHookView().addOptionPanel(getOptionsBugTrackerPanel());
+	        // extensionHook.getHookView().addOptionPanel(getOptionsBugTrackerPanel());
 			View.getSingleton().getOptionsDialog("").addParamPanel(new String[]{"Bug Trackers"}, githubTracker.getOptionsPanel(), true);
 			View.getSingleton().getOptionsDialog("").addParamPanel(new String[]{"Bug Trackers"}, "Bugzilla", new AbstractParamPanel() {
                
@@ -521,12 +521,12 @@ public class ExtensionBugTracker extends ExtensionAdaptor implements ContextPane
 		super.unload();
 	}
 
-	private OptionsBugTrackerPanel getOptionsBugTrackerPanel() {
-		if (optionsBugTrackerPanel == null) {
-			optionsBugTrackerPanel = new OptionsBugTrackerPanel(this);
-		}
-		return optionsBugTrackerPanel;
-	}
+	// private OptionsBugTrackerPanel getOptionsBugTrackerPanel() {
+	// 	if (optionsBugTrackerPanel == null) {
+	// 		optionsBugTrackerPanel = new OptionsBugTrackerPanel(this);
+	// 	}
+	// 	return optionsBugTrackerPanel;
+	// }
 
 	private PopupSemiAutoIssue getPopupMsgRaiseSemiAuto() {
 		if (popupMsgRaiseSemiAuto  == null) {

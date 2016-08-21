@@ -124,6 +124,10 @@ public class BugTrackerGithub extends BugTracker {
     }
 
     public void createDialogs(RaiseSemiAutoIssueDialog dialog, int index) {
+        List<BugTrackerGithubConfigParams> configs = options.getConfigs();
+        for(BugTrackerGithubConfigParams config: configs) {
+            System.out.println(config.getName()+", "+config.getPassword()+", "+config.getRepoUrl());
+        }
         dialog.addTextField(index, FIELD_REPO, "");
         dialog.addTextField(index, FIELD_TITLE, getTitle());
         dialog.addMultilineField(index, FIELD_BODY, getBody());
@@ -301,18 +305,6 @@ public class BugTrackerGithub extends BugTracker {
             options = new BugTrackerGithubParam();
         }
         return options;
-    }
-
-    public void init(OptionsParam optionsParam) {
-        BugTrackerGithubParam githubParam = optionsParam.getParamSet(BugTrackerGithubParam.class);
-        getGithubModel().setConfigs(githubParam.getConfigs());
-        // githubPanel.setConfirmRemoveToken(!githubPanel.isConfirmRemoveToken());
-    }
-
-    public void save(OptionsParam optionsParam) {
-        BugTrackerGithubParam githubParam = optionsParam.getParamSet(BugTrackerGithubParam.class);
-        githubParam.setConfigs(getGithubModel().getElements());
-        // githubParam.setConfirmRemoveToken(!githubPanel.isRemoveWithoutConfirmation());
     }
 
     public static class BugTrackerGithubMultipleOptionsPanel extends AbstractMultipleOptionsTablePanel<BugTrackerGithubConfigParams> {

@@ -272,19 +272,6 @@ public class BugTrackerBugzilla extends BugTracker {
         }
         return bugzillaModel;
     }
-    
-    public void init(OptionsParam optionsParam) {
-        // BugTrackerGithubParam githubParam = optionsParam.getParamSet(BugTrackerGithubParam.class);
-        // getGithubModel().setConfigs(githubParam.getConfigs());
-        // githubPanel.setConfirmRemoveToken(!githubPanel.isConfirmRemoveToken());
-    }
-
-    public void save(OptionsParam optionsParam) {
-        // BugTrackerGithubParam githubParam = optionsParam.getParamSet(BugTrackerGithubParam.class);
-        // githubParam.setConfigs(getGithubModel().getElements());
-        // githubParam.setConfirmRemoveToken(!githubPanel.isRemoveWithoutConfirmation());
-    }
-
 
     private static class BugTrackerBugzillaMultipleOptionsPanel extends AbstractMultipleOptionsTablePanel<BugTrackerBugzillaParams> {
         

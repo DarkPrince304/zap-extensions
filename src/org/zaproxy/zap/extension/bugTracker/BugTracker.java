@@ -31,8 +31,4 @@ public abstract class BugTracker {
 
     public abstract String getId();
 
-    public abstract void init(OptionsParam optionsParam);
-
-    public abstract void save(OptionsParam optionsParam);
-
 }
