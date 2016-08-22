@@ -116,7 +116,8 @@ public class RaiseSemiAutoIssueDialog extends StandardFieldsDialog {
         List<BugTracker> bugTrackers = extension.getBugTrackers();
         for(BugTracker bugTracker: bugTrackers) {
             if(bugTracker.getName().equals(currentItem)) {
-                bugTracker.raise(this);
+                String response = bugTracker.raise(this);
+                View.getSingleton().showMessageDialog(response);
             }
         }
     }

@@ -39,6 +39,6 @@ public abstract class BugTracker {
 
     public abstract void createDialogs();
 
-    public abstract void raise(RaiseSemiAutoIssueDialog dialog);
+    public abstract String raise(RaiseSemiAutoIssueDialog dialog);
 
 }

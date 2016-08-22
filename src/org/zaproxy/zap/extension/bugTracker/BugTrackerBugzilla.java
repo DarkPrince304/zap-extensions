@@ -214,7 +214,7 @@ public class BugTrackerBugzilla extends BugTracker {
 	}
 
 
-	public void raiseOnTracker(String url, String summary, String description, String product, String component, String version, String os, String platform, String username, String password) throws IOException {
+	public String raiseOnTracker(String url, String summary, String description, String product, String component, String version, String os, String platform, String username, String password) throws IOException {
 		try {
 			BugzillaConnector conn = new BugzillaConnector(); 
 			conn.connectTo(url); 
@@ -236,14 +236,19 @@ public class BugTrackerBugzilla extends BugTracker {
 			conn.executeMethod(report); 
 
 			System.out.println("Raised");
+            return Constant.messages.getString("bugTracker.trackers.bugzilla.issue.msg.raised");
 		} catch(ConnectionException e) {
-		  
+            log.debug(e.toString());
+            String[] response = e.toString().split("com.j2bugzilla.base.ConnectionException: ");
+            return response[1];
 		} catch(BugzillaException e) {
-		  
+            log.debug(e.toString());
+            String[] response = e.toString().split("com.j2bugzilla.base.BugzillaException: ");
+            return response[1];		  
 		}
 	}
 
-    public void raise() {
+    public String raise() {
         String url, summary, description, product, component, version, os, platform, username, password;
         url = "https://landfill.bugzilla.org/bugzilla-5.0-branch/";
         summary = getSummary();
@@ -256,14 +261,15 @@ public class BugTrackerBugzilla extends BugTracker {
         username = "sanchitlucknow@gmail.com";
         password = "";
         try {
-            raiseOnTracker(url, summary, description, product, component, version, os, platform, username, password);
-            System.out.println("Raised");
+            String response = raiseOnTracker(url, summary, description, product, component, version, os, platform, username, password);
+            return response;
         } catch(IOException e) {
             log.debug(e.toString());
+            return e.toString();
         }
     }
 
-	public void raise(RaiseSemiAutoIssueDialog dialog) {
+	public String raise(RaiseSemiAutoIssueDialog dialog) {
         String url, summary, description, product, component, version, os, platform, username, password, configBugzilla;
         url = dialog.getStringValue(FIELD_URL);
         summary = dialog.getStringValue(FIELD_SUMMARY);
@@ -287,10 +293,11 @@ public class BugTrackerBugzilla extends BugTracker {
             }
         }
         try {
-            raiseOnTracker(url, summary, description, product, component, version, os, platform, username, password);
-            System.out.println("Raised");
+            String response =raiseOnTracker(url, summary, description, product, component, version, os, platform, username, password);
+            return response;
         } catch(IOException e) {
             log.debug(e.toString());
+            return e.toString();
         }
     } 
 
