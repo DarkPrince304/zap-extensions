@@ -24,6 +24,7 @@ import java.awt.Frame;
 import org.parosproxy.paros.Constant;
 import org.parosproxy.paros.core.scanner.Alert;
 import org.zaproxy.zap.utils.ZapTextField;
+import org.parosproxy.paros.view.View;
  
 import org.zaproxy.zap.view.StandardFieldsDialog;
 import java.awt.Dimension;

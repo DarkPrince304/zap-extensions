@@ -73,6 +73,7 @@ import java.awt.event.ItemEvent;
 import org.parosproxy.paros.model.OptionsParam;
 import org.parosproxy.paros.view.AbstractParamPanel;
 import java.io.FileNotFoundException;
+import java.lang.NullPointerException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -172,7 +173,16 @@ public class BugTrackerGithub extends BugTracker {
                 }
             }
         } catch(IOException e) {
-            log.debug(Constant.messages.getString("bugTracker.trackers.github.issue.msg.param"));
+            String response = e.toString();
+            System.out.println(e.toString());
+            if(response.contains("missing_field")) {
+                View.getSingleton().showWarningDialog(Constant.messages.getString("bugTracker.trackers.github.issue.msg.missing"));
+            } else if(response.contains("invalid")) {
+                View.getSingleton().showWarningDialog(Constant.messages.getString("bugTracker.trackers.github.issue.msg.param"));
+            }
+        } catch(NullPointerException e) {
+            String response = e.toString();
+            View.getSingleton().showWarningDialog(Constant.messages.getString("bugTracker.trackers.github.issue.msg.null"));
         }
     }
 
@@ -265,7 +275,13 @@ public class BugTrackerGithub extends BugTracker {
         } catch(ArrayIndexOutOfBoundsException e) {
             log.debug(Constant.messages.getString("bugTracker.trackers.github.issue.msg.repo"));
         } catch(HttpException e) {
-            log.debug(e.toString());
+            String response = e.toString();
+            log.debug(response);
+            if(response.contains("Unauthorized")) {
+                View.getSingleton().showWarningDialog(Constant.messages.getString("bugTracker.trackers.github.issue.msg.auth"));
+            } else {
+                View.getSingleton().showWarningDialog(response);
+            }
         }
         return collaborators;
     }
@@ -283,26 +299,16 @@ public class BugTrackerGithub extends BugTracker {
             }
             String response = issue.create().toString();
             System.out.println(response);
-            if(response.contains("401")) {
-                log.debug(Constant.messages.getString("bugTracker.trackers.github.issue.msg.auth"));
-            }
-            log.debug(response);
+            View.getSingleton().showWarningDialog(Constant.messages.getString("bugTracker.trackers.github.issue.msg.raised"));
         } catch(ArrayIndexOutOfBoundsException e) {
             log.debug(Constant.messages.getString("bugTracker.trackers.github.issue.msg.repo"));
         } catch(HttpException e) {
             String response = e.toString();
-            System.out.println(e.getResponseMessage());
+            log.debug(response);
             if(response.contains("Unauthorized")) {
-                System.out.println("Unauthorized");
-                View.getSingleton().showWarningDialog("Unauthorized");
-            } else if(response.contains("missing")) {
-                System.out.println("The resource/repo does not exist");
-            } else if(response.contains("missing_field")) {
-                System.out.println("Some field(s) are missing");
-            } else if(response.contains("invalid")) {
-                System.out.println("Check the fields again");
+                View.getSingleton().showWarningDialog(Constant.messages.getString("bugTracker.trackers.github.issue.msg.auth"));
             } else {
-                System.out.println(response);
+                View.getSingleton().showWarningDialog(response);
             }
         }
     }
@@ -321,10 +327,16 @@ public class BugTrackerGithub extends BugTracker {
             raiseOnTracker(repo, title, body, labels, assignee, username, password);
             System.out.println("Raised");
         } catch(FileNotFoundException e) {
-            System.out.println("Resource/Repository does not exist");
+            String response = e.toString();
+            View.getSingleton().showWarningDialog("bugTracker.trackers.github.issue.msg.repo");
         } catch(IOException e) {
+            String response = e.toString();
             System.out.println(e.toString());
-            log.debug(Constant.messages.getString("bugTracker.trackers.github.issue.msg.param"));
+            if(response.contains("missing_field")) {
+                View.getSingleton().showWarningDialog("bugTracker.trackers.github.issue.msg.missing");
+            } else if(response.contains("invalid")) {
+                View.getSingleton().showWarningDialog("bugTracker.trackers.github.issue.msg.param");
+            } 
         }
     }
 
@@ -356,8 +368,13 @@ public class BugTrackerGithub extends BugTracker {
             raiseOnTracker(repo, title, body, labels, assignee, username, password);
             System.out.println("Raised");
         } catch(IOException e) {
+            String response = e.toString();
             System.out.println(e.toString());
-            log.debug(Constant.messages.getString("bugTracker.trackers.github.issue.msg.param"));
+            if(response.contains("missing_field")) {
+                View.getSingleton().showWarningDialog(Constant.messages.getString("bugTracker.trackers.github.issue.msg.missing"));
+            } else if(response.contains("invalid")) {
+                View.getSingleton().showWarningDialog(Constant.messages.getString("bugTracker.trackers.github.issue.msg.param"));
+            } 
         }
     }
 
