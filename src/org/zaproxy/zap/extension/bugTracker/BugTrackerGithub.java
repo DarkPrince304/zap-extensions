@@ -72,6 +72,7 @@ import java.awt.event.ItemListener;
 import java.awt.event.ItemEvent;
 import org.parosproxy.paros.model.OptionsParam;
 import org.parosproxy.paros.view.AbstractParamPanel;
+import java.io.FileNotFoundException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -289,7 +290,20 @@ public class BugTrackerGithub extends BugTracker {
         } catch(ArrayIndexOutOfBoundsException e) {
             log.debug(Constant.messages.getString("bugTracker.trackers.github.issue.msg.repo"));
         } catch(HttpException e) {
-            log.debug(e.toString());
+            String response = e.toString();
+            System.out.println(e.getResponseMessage());
+            if(response.contains("Unauthorized")) {
+                System.out.println("Unauthorized");
+                View.getSingleton().showWarningDialog("Unauthorized");
+            } else if(response.contains("missing")) {
+                System.out.println("The resource/repo does not exist");
+            } else if(response.contains("missing_field")) {
+                System.out.println("Some field(s) are missing");
+            } else if(response.contains("invalid")) {
+                System.out.println("Check the fields again");
+            } else {
+                System.out.println(response);
+            }
         }
     }
 
@@ -306,7 +320,10 @@ public class BugTrackerGithub extends BugTracker {
         try {
             raiseOnTracker(repo, title, body, labels, assignee, username, password);
             System.out.println("Raised");
+        } catch(FileNotFoundException e) {
+            System.out.println("Resource/Repository does not exist");
         } catch(IOException e) {
+            System.out.println(e.toString());
             log.debug(Constant.messages.getString("bugTracker.trackers.github.issue.msg.param"));
         }
     }
@@ -339,6 +356,7 @@ public class BugTrackerGithub extends BugTracker {
             raiseOnTracker(repo, title, body, labels, assignee, username, password);
             System.out.println("Raised");
         } catch(IOException e) {
+            System.out.println(e.toString());
             log.debug(Constant.messages.getString("bugTracker.trackers.github.issue.msg.param"));
         }
     }
